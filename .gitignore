@@ -1,0 +1,51 @@
+# Build do .NET
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Codex
+.codex/
+codex/contexto_bancoDeDados.png
+codex/schema_projeto_site_vip_admin.pdf
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Banco SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Configurações locais e segredos
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+
