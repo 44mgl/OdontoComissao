@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using ApiOdonto.Enums;
 
 
@@ -30,4 +31,6 @@ public class Evento
     public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
 
     public DateTime DataAtualizacao { get; set; } = DateTime.UtcNow;
+
+
 }

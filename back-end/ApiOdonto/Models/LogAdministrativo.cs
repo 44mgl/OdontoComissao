@@ -16,3 +16,4 @@ namespace ApiOdonto.Models
         public Administrador Administrador { get; set; } = null!;
     }
 }
+

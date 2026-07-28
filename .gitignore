@@ -17,6 +17,8 @@ obj/
 codex/contexto_bancoDeDados.png
 codex/schema_projeto_site_vip_admin.pdf
 
+=======
+
 # JetBrains Rider
 .idea/
 *.sln.iml
@@ -47,5 +49,3 @@ Thumbs.db
 # Arquivos temporários
 *.tmp
 *.temp
-
-
