@@ -1,0 +1,6 @@
+@ApiOdonto_HostAddress = http://localhost:5255
+
+GET {{ApiOdonto_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
