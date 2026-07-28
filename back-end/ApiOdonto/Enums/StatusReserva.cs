@@ -1,11 +1,10 @@
-namespace ApiOdonto.Enums
+namespace ApiOdonto.Enums;
+
+public enum StatusReserva
 {
-    public enum StatusReserva
-    {
-        Pendente,
-        Confirmada,
-        Separada,
-        Retirada,
-        Cancelada
-    }
+    Pendente = 1,
+    Confirmada = 2,
+    Separada = 3,
+    Retirada = 4,
+    Cancelada = 5
 }
