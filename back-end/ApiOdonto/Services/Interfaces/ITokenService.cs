@@ -8,6 +8,7 @@ namespace ApiOdonto.Services.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateToken(Administrador administrador);
+        // Qualquer classe que seja um serviço de token precisa receber um administrador e devolver um token em formato de texto.
+        string GenerateToken(Administrador administrador); 
     }
 }
