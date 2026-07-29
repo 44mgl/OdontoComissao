@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using ApiOdonto.Repositories.Implementations;
 using ApiOdonto.Repositories.Interfaces;
 
-var builder = WebApplication.CreateBuilder(args);
+using DotNetEnv;
 
+var builder = WebApplication.CreateBuilder(args);
+Env.Load();
 
 builder.Services.AddControllers();
 

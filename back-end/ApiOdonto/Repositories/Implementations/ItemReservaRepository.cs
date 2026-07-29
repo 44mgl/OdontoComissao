@@ -12,7 +12,7 @@ public class ItemReservaRepository : IItemReservaRepository
     public ItemReservaRepository(AppDbContext context) => _context = context;
 
     public Task<List<ItemReserva>> GetByReservaIdAsync(int reservaId) =>
-        _context.ItensReservas.AsNoTracking()
+        _context.ItensReservas.AsNoTracking() 
             .Include(i => i.VariacaoProduto)
             .Where(i => i.ReservaId == reservaId)
             .ToListAsync();
