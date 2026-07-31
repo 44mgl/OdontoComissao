@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ApiOdonto.Models;
 using DotNetEnv;
+using ApiOdonto.Middlewares;
 
 // Carrega as variáveis do arquivo .env antes da criação da aplicação.
 Env.Load();
@@ -140,6 +141,8 @@ if (app.Environment.IsDevelopment())
         );
     });
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
