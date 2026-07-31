@@ -10,4 +10,5 @@ public interface IProdutoRepository
     Task<Produto> CreateAsync(Produto produto);
     Task UpdateAsync(Produto produto);
     Task<bool> DeleteAsync(int id);
+    Task<bool> AlterarStatusAsync(int id, bool ativo);
 }

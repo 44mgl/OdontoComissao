@@ -41,6 +41,18 @@ public class ProdutoRepository : IProdutoRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> AlterarStatusAsync(int id, bool ativo)
+    {
+        var produto = await _context.Produtos.FindAsync(id);
+        if (produto is null)
+            return false;
+
+        produto.Ativo = ativo;
+        produto.DataAtualizacao = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<bool> DeleteAsync(int id)
     {
         var produto = await _context.Produtos.FindAsync(id);
