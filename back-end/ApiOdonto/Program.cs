@@ -100,6 +100,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
+// Services
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<IEventoService, EventoService>();
+builder.Services.AddScoped<IPublicacaoService, PublicacaoService>();
+builder.Services.AddScoped<IMembroComissaoService, MembroComissaoService>();
+builder.Services.AddScoped<IMembroVipService, MembroVipService>();
+builder.Services.AddScoped<IVariacaoProdutoService, VariacaoProdutoService>();
+builder.Services.AddScoped<IReservaService, ReservaService>();
+
 // Repositories
 builder.Services.AddScoped<IAdministradorRepository, AdministradorRepository>();
 builder.Services.AddScoped<IEventoRepository, EventoRepository>();
