@@ -33,6 +33,7 @@ appsettings.Production.json
 .env.*
 !.env.example
 .agent.md
+PLANO_CORRECAO.md
 
 # Logs
 *.log

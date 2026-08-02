@@ -22,7 +22,9 @@ public class VariacaoProdutoRepository : IVariacaoProdutoRepository
             .ToListAsync();
 
     public Task<VariacaoProduto?> GetByIdAsync(int id) =>
-        _context.VariacoesProdutos.FirstOrDefaultAsync(v => v.Id == id);
+        _context.VariacoesProdutos
+        .Include(v => v.Produto)
+        .FirstOrDefaultAsync(v => v.Id == id);
 
     public async Task<VariacaoProduto> CreateAsync(VariacaoProduto variacao)
     {
