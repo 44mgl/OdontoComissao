@@ -2,6 +2,7 @@ using ApiOdonto.Data;
 using ApiOdonto.Models;
 using ApiOdonto.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using ApiOdonto.Enums;
 
 namespace ApiOdonto.Repositories.Implementations;
 
@@ -16,9 +17,12 @@ public class EventoRepository : IEventoRepository
 
     public Task<List<Evento>> GetProximosEventosAsync() =>
         _context.Eventos.AsNoTracking()
-            .Where(e => e.Ativo && e.DataHora >= DateTime.UtcNow)
-            .OrderBy(e => e.DataHora)
-            .ToListAsync();
+        .Where(e =>
+            e.Ativo &&
+            e.Status == StatusEvento.Agendado &&
+            e.DataHora >= DateTime.UtcNow)
+        .OrderBy(e => e.DataHora)
+        .ToListAsync();
 
     public Task<Evento?> GetByIdAsync(int id) =>
         _context.Eventos.FirstOrDefaultAsync(e => e.Id == id);

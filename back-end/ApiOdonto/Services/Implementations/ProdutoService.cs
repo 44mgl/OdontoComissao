@@ -6,6 +6,7 @@ using ApiOdonto.DTOs.Produtos;
 using ApiOdonto.Models;
 using ApiOdonto.Repositories.Interfaces;
 using ApiOdonto.Services.Interfaces;
+using ApiOdonto.DTOs.Variacoes;
 
 namespace ApiOdonto.Services.Implementations
 {
@@ -25,9 +26,24 @@ namespace ApiOdonto.Services.Implementations
                 Id = produto.Id,
                 Nome = produto.Nome,
                 Descricao = produto.Descricao,
+                ImagemUrl = produto.ImagemUrl,
                 Categoria = produto.Categoria,
+                Preco = produto.Preco,
                 Ativo = produto.Ativo,
-                ExclusivoVip = produto.ExclusivoVip
+                ExclusivoVip = produto.ExclusivoVip,
+                DataCriacao = produto.DataCriacao,
+                DataAtualizacao = produto.DataAtualizacao,
+
+                Variacoes = produto.Variacoes 
+                .Select(variacao => new VariacaoProdutoResponseDto // Percorre cada entidade e cria uma DTO pra cada uma
+                {
+                    Id = variacao.Id,
+                    ProdutoId = variacao.ProdutoId,
+                    Tamanho = variacao.Tamanho,
+                    QuantidadeDisponivel = variacao.QuantidadeDisponivel,
+                    Ativo = variacao.Ativo
+                })
+                .ToList()
             };
         }
 
@@ -84,6 +100,7 @@ namespace ApiOdonto.Services.Implementations
                 produto.ImagemUrl = dto.ImagemUrl;
                 produto.Categoria = dto.Categoria;
                 produto.ExclusivoVip = dto.ExclusivoVip;
+                produto.Ativo = dto.Ativo;
                 produto.DataAtualizacao = DateTime.UtcNow;
 
             await _produtoRepository.UpdateAsync(produto);

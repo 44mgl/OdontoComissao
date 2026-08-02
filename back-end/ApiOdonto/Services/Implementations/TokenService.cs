@@ -20,6 +20,30 @@ namespace ApiOdonto.Services.Implementations
         private readonly string _audience;
         private readonly int _expiresMinutes;
 
+        
+        private string GenerateToken(IEnumerable<Claim> claims)
+        {
+            // Cria a chave de segurança a partir da chave secreta
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_key));
+
+            // Cria as credenciais de assinatura usando a chave e o algoritmo HMAC-SHA256
+            var credentials = new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256);
+
+            // Cria o token JWT 
+            var token = new JwtSecurityToken(
+                issuer: _issuer,
+                audience: _audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_expiresMinutes),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler()
+            .WriteToken(token);
+        }
+
         public TokenService()
         {
             // usa o Environment.GetEnvironmentVariable() para procurar a variavel no ambiente .env
@@ -45,36 +69,29 @@ namespace ApiOdonto.Services.Implementations
 
         public string GenerateToken(Administrador administrador)
         {
-            // Claims são informações declaradas sobre o usuário autenticado.
-            // O valor de uma claim precisa ser em string
-            var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, administrador.Id.ToString()),
-            new Claim(ClaimTypes.Name, administrador.Nome),
-            new Claim(ClaimTypes.Email, administrador.Email),
-            new Claim(ClaimTypes.Role, "Administrador")
-        };
-            // SymmetricSecurityKey significa que a mesma chave é usada para: assinar o token; validar a assinatura do token.
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_key) // transforma a chave em um conjunto de bytes.
-            );
-            
-            // Defini qual chave será usada e qual algoritmo fará a assinatura
-            var credentials = new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256 // serve para garantir a integridade e a autenticidade de um dado.
-            );
+            var claims = new List<Claim> // Claims são informações colocadas dentro do token e protegidas pela assinatura.
+          {
+            new(ClaimTypes.NameIdentifier, administrador.Id.ToString()),
+            new(ClaimTypes.Name, administrador.Nome),
+            new(ClaimTypes.Email, administrador.Email),
+            new(ClaimTypes.Role, "Administrador")
+          };
 
-            // Aqui o token é montado.
-            var token = new JwtSecurityToken(
-                issuer: _issuer,
-                audience: _audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_expiresMinutes),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token); // WrtikeToken(token) converte esse objeto para o formatu JWT
+            return GenerateToken(claims);
         }
+
+        public string GenerateToken(MembroVip membroVip)
+        {
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, membroVip.Id.ToString()),
+                new(ClaimTypes.Name, membroVip.Nome),
+                new("numeroIdentificacao", membroVip.NumeroIdentificacao),
+                new(ClaimTypes.Role, "VIP")
+            };
+
+            return GenerateToken(claims);
+        }
+
     }
 }

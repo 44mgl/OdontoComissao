@@ -33,6 +33,10 @@ namespace ApiOdonto.Data
                 .HasIndex(a => a.Email)
                 .IsUnique();
 
+            modelBuilder.Entity<MembroVip>()
+                .HasIndex(m => m.Email)
+                .IsUnique();    
+
             // Não permite dois membros VIP com a mesma identificação.
             modelBuilder.Entity<MembroVip>()
                 .HasIndex(m => m.NumeroIdentificacao)

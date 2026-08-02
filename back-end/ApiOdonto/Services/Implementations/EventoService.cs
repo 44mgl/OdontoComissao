@@ -56,7 +56,7 @@ public class EventoService : IEventoService
         {
             Titulo = dto.Titulo,
             Descricao = dto.Descricao,
-            DataHora = dto.DataHora,
+            DataHora = dto.DataHora!.Value,
             Local = dto.Local,
             Categoria = dto.Categoria,
             Status = dto.Status,
@@ -75,7 +75,7 @@ public class EventoService : IEventoService
 
         evento.Titulo = dto.Titulo;
         evento.Descricao = dto.Descricao;
-        evento.DataHora = dto.DataHora;
+        evento.DataHora = dto.DataHora!.Value;
         evento.Local = dto.Local;
         evento.Categoria = dto.Categoria;
         evento.Status = dto.Status;

@@ -24,12 +24,15 @@ public class MembroVipRepository : IMembroVipRepository
         _context.MembrosVip.FirstOrDefaultAsync(
             m => m.NumeroIdentificacao == numeroIdentificacao);
 
-    public Task<bool> EmailExistsAsync(string email) =>
-        _context.MembrosVip.AnyAsync(m => m.Email == email);
+    public Task<bool> EmailExistsAsync(string email, int? ignorarId = null) =>
+        _context.MembrosVip.AnyAsync(m =>  
+            m.Email == email &&
+            (!ignorarId.HasValue || m.Id != ignorarId.Value)); // Nenhum ID foi informado para ignorar ou o registro encontrado possui outro ID
 
-    public Task<bool> NumeroIdentificacaoExistsAsync(string numeroIdentificacao) =>
-        _context.MembrosVip.AnyAsync(
-            m => m.NumeroIdentificacao == numeroIdentificacao);
+    public Task<bool> NumeroIdentificacaoExistsAsync(string numeroIdentificacao, int? ignorarId = null) =>
+        _context.MembrosVip.AnyAsync(m =>
+            m.NumeroIdentificacao == numeroIdentificacao &&
+            (!ignorarId.HasValue || m.Id != ignorarId.Value));
 
     public async Task<MembroVip> CreateAsync(MembroVip membroVip)
     {

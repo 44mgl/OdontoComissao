@@ -20,4 +20,6 @@ public class CriarProdutoDto
     public string Categoria { get; set; } = string.Empty;
 
     public bool ExclusivoVip { get; set; }
+
+    
 }

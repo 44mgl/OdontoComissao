@@ -1,4 +1,5 @@
 namespace ApiOdonto.DTOs.Produtos;
+using ApiOdonto.DTOs.Variacoes;
 
 public class ProdutoResponseDto
 {
@@ -12,4 +13,5 @@ public class ProdutoResponseDto
     public bool Ativo { get; set; }
     public DateTime DataCriacao { get; set; }
     public DateTime DataAtualizacao { get; set; }
+    public List<VariacaoProdutoResponseDto> Variacoes { get; set; } = [];
 }
