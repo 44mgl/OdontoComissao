@@ -11,4 +11,5 @@ public interface IVariacaoProdutoRepository
     Task UpdateAsync(VariacaoProduto variacao);
     Task<bool> UpdateEstoqueAsync(int id, int quantidadeDisponivel);
     Task<bool> DeleteAsync(int id);
+    Task<bool> VariacaoExistsAsync(int produtoId, string tamanho, int? ignorarId = null);
 }

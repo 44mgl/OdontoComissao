@@ -25,7 +25,7 @@ namespace ApiOdonto.Data
         public DbSet<VariacaoProduto> VariacoesProdutos { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
+        {
             base.OnModelCreating(modelBuilder);
 
             // Não permite dois administradores com o mesmo e-mail.
@@ -46,6 +46,15 @@ namespace ApiOdonto.Data
             modelBuilder.Entity<Reserva>()
                 .HasIndex(r => r.CodigoReserva)
                 .IsUnique();
+
+            // Não permite duas variações de um mesmo produto e mesmo tamanho.
+            modelBuilder.Entity<VariacaoProduto>()
+                .HasIndex(v => new
+            {
+                v.ProdutoId,
+                v.Tamanho
+            })
+            .IsUnique();
         }
 
     }
