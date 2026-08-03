@@ -1,5 +1,6 @@
 using ApiOdonto.DTOs.Publicacoes;
 using ApiOdonto.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiOdonto.Controllers;
@@ -16,6 +17,7 @@ public class PublicacaoController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<List<PublicacaoResponseDto>>> GetAll()
     {
         var publicacoes = await _publicacaoService.GetAllAsync();
@@ -23,6 +25,7 @@ public class PublicacaoController : ControllerBase
     }
 
     [HttpGet("destaques")]
+    [AllowAnonymous]
     public async Task<ActionResult<List<PublicacaoResponseDto>>> GetDestaques()
     {
         var publicacoes = await _publicacaoService.GetDestaquesAsync();
@@ -30,6 +33,7 @@ public class PublicacaoController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<PublicacaoResponseDto>> GetById(int id)
     {
         var publicacao = await _publicacaoService.GetByIdAsync(id);
@@ -40,6 +44,7 @@ public class PublicacaoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<PublicacaoResponseDto>> Create([FromBody] CriarPublicacaoDto dto)
     {
         var publicacao = await _publicacaoService.CreateAsync(dto);
@@ -47,6 +52,7 @@ public class PublicacaoController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Update(int id, [FromBody] AtualizarPublicacaoDto dto)
     {
         var atualizado = await _publicacaoService.UpdateAsync(id, dto);
@@ -54,6 +60,7 @@ public class PublicacaoController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Delete(int id)
     {
         var deletado = await _publicacaoService.DeleteAsync(id);

@@ -1,11 +1,13 @@
 using ApiOdonto.DTOs.Variacoes;
 using ApiOdonto.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiOdonto.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class VariacaoProdutoController : ControllerBase
 {
     private readonly IVariacaoProdutoService _variacaoProdutoService;

@@ -52,11 +52,20 @@ public class AuthService : IAuthService
 
         var token = _tokenService.GenerateToken(administrador);
 
+        var expiresValue = Environment.GetEnvironmentVariable("JWT_EXPIRES_MINUTES");
+
+        if (!int.TryParse(expiresValue,out var expiresMinutes))
+        {
+            throw new InvalidOperationException("JWT_EXPIRES_MINUTES inválido ou não configurado.");
+        }
+
         return new LoginResponseDto
         {
             Token = token,
+            AdministradorId = administrador.Id,
             Nome = administrador.Nome,
-            Email = administrador.Email
+            Email = administrador.Email,
+            Expiracao = DateTime.UtcNow.AddMinutes(expiresMinutes)
         };
     }
 }

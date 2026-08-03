@@ -16,6 +16,7 @@ public class ProdutoController : ControllerBase
         _produtoService = produtoService;
     }
 
+    [Authorize(Roles = "Administrador")]
     [HttpGet]
     public async Task<ActionResult<List<ProdutoResponseDto>>> GetAll()
     {
@@ -23,6 +24,7 @@ public class ProdutoController : ControllerBase
         return Ok(produtos);
     }
 
+    [Authorize(Roles = "Administrador")]
     [HttpGet("categoria")]
     public async Task<ActionResult<List<ProdutoResponseDto>>> GetByCategoria([FromQuery] string categoria)
     {
@@ -30,6 +32,7 @@ public class ProdutoController : ControllerBase
         return Ok(produtos);
     }
 
+    [Authorize(Roles = "Administrador")]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ProdutoResponseDto>> GetById(int id)
     {
@@ -40,6 +43,7 @@ public class ProdutoController : ControllerBase
         return Ok(produto);
     }
 
+    [Authorize(Roles = "Administrador")]
     [HttpPost]
     public async Task<ActionResult<ProdutoResponseDto>> Create([FromBody] CriarProdutoDto dto)
     {
@@ -47,13 +51,15 @@ public class ProdutoController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = produto.Id }, produto);
     }
 
+    [Authorize(Roles = "Administrador")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] AtualizarProdutoDto dto)
     {
         var atualizado = await _produtoService.UpdateAsync(id, dto);
         return atualizado ? NoContent() : NotFound();
     }
-
+    
+    [Authorize(Roles = "Administrador")]
     [HttpPatch("{id:int}/status")]
     public async Task<IActionResult> AlterarStatus(int id, [FromBody] bool ativo)
     {
@@ -61,6 +67,7 @@ public class ProdutoController : ControllerBase
         return atualizado ? NoContent() : NotFound();
     }
 
+    [Authorize(Roles = "Administrador")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

@@ -1,11 +1,13 @@
 using ApiOdonto.DTOs.VIPs;
 using ApiOdonto.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiOdonto.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class MembroVipController : ControllerBase
 {
     private readonly IMembroVipService _membroVipService;
