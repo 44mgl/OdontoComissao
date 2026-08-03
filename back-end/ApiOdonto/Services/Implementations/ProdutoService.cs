@@ -116,5 +116,17 @@ namespace ApiOdonto.Services.Implementations
         {
             return await _produtoRepository.DeleteAsync(id);
         }
+
+        public async Task<List<ProdutoResponseDto>>GetCatalogoPublicoAsync()
+        {
+            var produtos = await _produtoRepository.GetCatalogoPublicoAsync();
+            return produtos.Select(MapToDto).ToList();
+        }
+
+        public async Task<List<ProdutoResponseDto>>GetCatalogoVipAsync()
+        {
+            var produtos = await _produtoRepository.GetCatalogoVipAsync();
+            return produtos.Select(MapToDto).ToList();
+        }
     }
 }

@@ -15,5 +15,7 @@ namespace ApiOdonto.Services.Interfaces
     Task<bool> UpdateAsync(int id, AtualizarProdutoDto dto);
     Task<bool> AlterarStatusAsync(int id, bool ativo);
     Task<bool> DeleteAsync(int id);
+    Task<List<ProdutoResponseDto>>GetCatalogoPublicoAsync();
+    Task<List<ProdutoResponseDto>> GetCatalogoVipAsync();    
     }
 }
