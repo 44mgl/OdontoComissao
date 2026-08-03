@@ -7,7 +7,6 @@ using ApiOdonto.Services.Interfaces;
 using ApiOdonto.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using ApiOdonto.Models;
 using DotNetEnv;
 using ApiOdonto.Middlewares;
 
@@ -107,6 +106,7 @@ builder.Services.AddScoped<IEventoService, EventoService>();
 builder.Services.AddScoped<IPublicacaoService, PublicacaoService>();
 builder.Services.AddScoped<IMembroComissaoService, MembroComissaoService>();
 builder.Services.AddScoped<IMembroVipService, MembroVipService>();
+builder.Services.AddScoped<IMembroVipAuthService, MembroVipAuthService>();
 builder.Services.AddScoped<IVariacaoProdutoService, VariacaoProdutoService>();
 builder.Services.AddScoped<IReservaService, ReservaService>();
 

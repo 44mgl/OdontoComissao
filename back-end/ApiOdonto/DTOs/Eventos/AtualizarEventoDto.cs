@@ -12,7 +12,7 @@ public class AtualizarEventoDto
     public string Descricao { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "A data e hora são obrigatórias.")]
-    public DateTime DataHora { get; set; }
+    public DateTime? DataHora { get; set; }
 
     [Required(ErrorMessage = "O local é obrigatório.")]
     public string Local { get; set; } = string.Empty;
@@ -20,6 +20,8 @@ public class AtualizarEventoDto
     [Required(ErrorMessage = "A categoria é obrigatória.")]
     public string Categoria { get; set; } = string.Empty;
 
+    [EnumDataType(typeof(StatusEvento),
+    ErrorMessage = "Status do evento inválido.")]
     public StatusEvento Status { get; set; }
     public string? ImagemUrl { get; set; }
     public bool Ativo { get; set; }
