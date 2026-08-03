@@ -1,6 +1,7 @@
 using ApiOdonto.DTOs.Reservas;
 using ApiOdonto.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ApiOdonto.Controllers;
 
@@ -45,7 +46,21 @@ public class ReservaController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ReservaResponseDto>> Create([FromBody] CriarReservaDto dto)
     {
-        var reserva = await _reservaService.CreateAsync(dto);
+        int? membroVipAutenticadoId = null;
+
+        if (User.IsInRole("VIP"))
+        {
+            var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+
+            if (!int.TryParse(idClaim, out var membroVipId))
+            {
+                throw new InvalidOperationException("O token VIP não possui uma identificação válida.");
+            }
+
+            membroVipAutenticadoId = membroVipId;
+        }
+
+        var reserva = await _reservaService.CreateAsync(dto, membroVipAutenticadoId);
         return CreatedAtAction(nameof(GetById), new { id = reserva.Id }, reserva);
     }
 

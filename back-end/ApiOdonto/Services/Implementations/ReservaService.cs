@@ -83,7 +83,7 @@ public class ReservaService : IReservaService
         return reserva is null ? null : MapToDto(reserva);
     }
 
-    public async Task<ReservaResponseDto> CreateAsync(CriarReservaDto dto)
+    public async Task<ReservaResponseDto> CreateAsync(CriarReservaDto dto, int? membroVipAutenticadoId)
     {
         var itensAgrupados = dto.Itens
             .GroupBy(item => item.VariacaoProdutoId) // junta itens com o mesmo VariacaoProdutoId;
@@ -98,10 +98,10 @@ public class ReservaService : IReservaService
 
         MembroVip? membroVip = null;
 
-        if (dto.MembroVipId.HasValue)
+        if (membroVipAutenticadoId.HasValue)
         {
             membroVip = await _membroVipRepository
-                .GetByIdAsync(dto.MembroVipId.Value);
+                .GetByIdAsync(membroVipAutenticadoId.Value);
 
             switch (membroVip)
             {
@@ -164,7 +164,7 @@ public class ReservaService : IReservaService
             CodigoReserva = await GerarCodigoReservaAsync(),
             NomeCliente = dto.NomeCliente,
             Contato = dto.Contato,
-            MembroVipId = dto.MembroVipId,
+            MembroVipId = membroVipAutenticadoId,
             Observacoes = dto.Observacoes,
             Itens = new List<ItemReserva>()
         };

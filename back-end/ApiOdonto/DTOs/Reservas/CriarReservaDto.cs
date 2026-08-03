@@ -9,8 +9,6 @@ public class CriarReservaDto
 
     [Required(ErrorMessage = "O contato é obrigatório.")]
     public string Contato { get; set; } = string.Empty;
-
-    public int? MembroVipId { get; set; }
     public string? Observacoes { get; set; }
 
     [Required(ErrorMessage = "A reserva deve possuir pelo menos um item.")]
