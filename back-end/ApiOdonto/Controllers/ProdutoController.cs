@@ -1,6 +1,7 @@
 using ApiOdonto.DTOs.Produtos;
 using ApiOdonto.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiOdonto.Controllers;
 
@@ -65,5 +66,21 @@ public class ProdutoController : ControllerBase
     {
         var deletado = await _produtoService.DeleteAsync(id);
         return deletado ? NoContent() : NotFound();
+    }
+
+    [AllowAnonymous]
+    [HttpGet("catalogo")]
+    public async Task<ActionResult<List<ProdutoResponseDto>>> GetCatalogoPublico()
+    {
+        var produtos = await _produtoService.GetCatalogoPublicoAsync();
+        return Ok(produtos);
+    }
+    
+    [Authorize(Roles = "VIP")] // Só vai rodar se a role de quem fez a requisição for VIP
+    [HttpGet("vip")]
+    public async Task<ActionResult<List<ProdutoResponseDto>>>GetCatalogoVip()
+    {
+        var produtos = await _produtoService.GetCatalogoVipAsync();
+        return Ok(produtos);
     }
 }

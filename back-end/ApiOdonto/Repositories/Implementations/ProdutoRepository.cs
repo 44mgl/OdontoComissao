@@ -64,4 +64,18 @@ public class ProdutoRepository : IProdutoRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public Task<List<Produto>> GetCatalogoPublicoAsync() =>
+    _context.Produtos.AsNoTracking()
+        .Where(p => p.Ativo && !p.ExclusivoVip)
+        .Include(p => p.Variacoes.Where(v => v.Ativo))
+        .OrderBy(p => p.Nome)
+        .ToListAsync();
+
+    public Task<List<Produto>> GetCatalogoVipAsync() =>
+    _context.Produtos.AsNoTracking() 
+        .Where(p => p.Ativo && p.ExclusivoVip)
+        .Include(p => p.Variacoes.Where(v => v.Ativo))
+        .OrderBy(p => p.Nome)
+        .ToListAsync();
 }
