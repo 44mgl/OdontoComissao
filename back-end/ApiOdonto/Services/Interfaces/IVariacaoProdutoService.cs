@@ -11,4 +11,5 @@ public interface IVariacaoProdutoService
     Task<bool> UpdateAsync(int id, CriarVariacaoProdutoDto dto);
     Task<bool> UpdateEstoqueAsync(int id, AtualizarEstoqueDto dto);
     Task<bool> DeleteAsync(int id);
+
 }

@@ -67,4 +67,9 @@ public class VariacaoProdutoRepository : IVariacaoProdutoRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public Task<bool> VariacaoExistsAsync(int produtoId, string tamanho, int? ignorarId = null) =>
+    _context.VariacoesProdutos.AnyAsync(v =>
+        v.ProdutoId == produtoId && v.Tamanho == tamanho &&
+        (!ignorarId.HasValue || v.Id != ignorarId.Value));
 }

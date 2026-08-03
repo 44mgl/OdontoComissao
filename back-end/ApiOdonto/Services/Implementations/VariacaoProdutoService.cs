@@ -8,10 +8,12 @@ namespace ApiOdonto.Services.Implementations;
 public class VariacaoProdutoService : IVariacaoProdutoService
 {
     private readonly IVariacaoProdutoRepository _variacaoProdutoRepository;
+    private readonly IProdutoRepository _produtoRepository;
 
-    public VariacaoProdutoService(IVariacaoProdutoRepository variacaoProdutoRepository)
+    public VariacaoProdutoService(IVariacaoProdutoRepository variacaoProdutoRepository, IProdutoRepository produtoRepository)
     {
         _variacaoProdutoRepository = variacaoProdutoRepository;
+        _produtoRepository = produtoRepository;
     }
 
     private static VariacaoProdutoResponseDto MapToDto(VariacaoProduto variacao)
@@ -25,6 +27,9 @@ public class VariacaoProdutoService : IVariacaoProdutoService
             Ativo = variacao.Ativo
         };
     }
+
+    private static string NormalizarTamanho(string tamanho) =>
+    tamanho.Trim().ToUpperInvariant();
 
     public async Task<List<VariacaoProdutoResponseDto>> GetAllAsync()
     {
@@ -46,10 +51,25 @@ public class VariacaoProdutoService : IVariacaoProdutoService
 
     public async Task<VariacaoProdutoResponseDto> CreateAsync(CriarVariacaoProdutoDto dto)
     {
+        var tamanho = NormalizarTamanho(dto.Tamanho);
+
+        var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
+
+        if (produto is null)
+        {
+            throw new InvalidOperationException("O produto informado não existe.");
+        }
+
+        if (await _variacaoProdutoRepository.VariacaoExistsAsync(dto.ProdutoId, tamanho))
+        {
+            throw new InvalidOperationException("Esse produto já possui uma variação com esse tamanho.");
+        }
+        
         var variacao = new VariacaoProduto
+
         {
             ProdutoId = dto.ProdutoId,
-            Tamanho = dto.Tamanho,
+            Tamanho = tamanho,
             QuantidadeDisponivel = dto.QuantidadeDisponivel
         };
 
@@ -63,8 +83,23 @@ public class VariacaoProdutoService : IVariacaoProdutoService
         if (variacao is null)
             return false;
 
+            var tamanho = NormalizarTamanho(dto.Tamanho);
+            var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
+
+        if (produto is null)
+        {
+            throw new InvalidOperationException(
+            "O produto informado não existe.");
+        }
+
+        if (await _variacaoProdutoRepository.VariacaoExistsAsync(dto.ProdutoId, tamanho, id))
+        {
+            throw new InvalidOperationException(
+                "Esse produto já possui outra variação com esse tamanho.");
+        }
+
         variacao.ProdutoId = dto.ProdutoId;
-        variacao.Tamanho = dto.Tamanho;
+        variacao.Tamanho = tamanho;
         variacao.QuantidadeDisponivel = dto.QuantidadeDisponivel;
 
         await _variacaoProdutoRepository.UpdateAsync(variacao);
@@ -80,4 +115,5 @@ public class VariacaoProdutoService : IVariacaoProdutoService
     {
         return await _variacaoProdutoRepository.DeleteAsync(id);
     }
+
 }
