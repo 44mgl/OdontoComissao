@@ -14,10 +14,12 @@ namespace ApiOdonto.Repositories.Interfaces
 
         Task<Administrador?> GetByEmailAsync(string email);
 
-        Task<bool> EmailExistsAsync(string email);
+        Task<bool> EmailExistsAsync(string email, int? ignorarId = null);
 
         Task<Administrador> CreateAsync(Administrador administrador);
 
         Task UpdateAsync(Administrador administrador);
+
+        Task<int> CountAtivosAsync();
     }
 }

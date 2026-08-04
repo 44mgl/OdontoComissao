@@ -37,10 +37,11 @@ namespace ApiOdonto.Repositories.Implementations
             .FirstOrDefaultAsync(a => a.Email == email);
     }
 
-    public async Task<bool> EmailExistsAsync(string email)
+    public async Task<bool> EmailExistsAsync(string email,int? ignorarId = null) 
     {
-        return await _context.Administradores
-            .AnyAsync(a => a.Email == email);
+        return await _context.Administradores.AnyAsync(a =>
+            a.Email == email &&
+            (!ignorarId.HasValue || a.Id != ignorarId.Value));
     }
 
     public async Task<Administrador> CreateAsync(
@@ -52,10 +53,17 @@ namespace ApiOdonto.Repositories.Implementations
         return administrador;
     }
 
-    public async Task UpdateAsync(Administrador administrador)
-    {
-        _context.Administradores.Update(administrador);
-        await _context.SaveChangesAsync();
-    }
+        public async Task UpdateAsync(Administrador administrador)
+        {
+            _context.Administradores.Update(administrador);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> CountAtivosAsync()
+        {
+            var quantidade = await _context.Administradores.CountAsync(a => a.Ativo);
+
+            return quantidade;
+        }
     }
 }
