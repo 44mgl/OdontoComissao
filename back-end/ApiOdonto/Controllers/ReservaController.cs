@@ -1,5 +1,6 @@
 using ApiOdonto.DTOs.Reservas;
 using ApiOdonto.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -17,6 +18,7 @@ public class ReservaController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<List<ReservaResponseDto>>> GetAll()
     {
         var reservas = await _reservaService.GetAllAsync();
@@ -24,6 +26,7 @@ public class ReservaController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<ReservaResponseDto>> GetById(int id)
     {
         var reserva = await _reservaService.GetByIdAsync(id);
@@ -34,7 +37,8 @@ public class ReservaController : ControllerBase
     }
 
     [HttpGet("codigo")]
-    public async Task<ActionResult<ReservaResponseDto>> GetByCodigo([FromQuery] string codigoReserva)
+    [AllowAnonymous]
+    public async Task<ActionResult<ReservaPublicaResponseDto>> GetByCodigo([FromQuery] string codigoReserva)
     {
         var reserva = await _reservaService.GetByCodigoAsync(codigoReserva);
         if (reserva is null)
@@ -44,6 +48,7 @@ public class ReservaController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<ReservaResponseDto>> Create([FromBody] CriarReservaDto dto)
     {
         int? membroVipAutenticadoId = null;
@@ -65,6 +70,7 @@ public class ReservaController : ControllerBase
     }
 
     [HttpPatch("{id:int}/status")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] AtualizarStatusReservaDto dto)
     {
         var atualizado = await _reservaService.UpdateStatusAsync(id, dto);

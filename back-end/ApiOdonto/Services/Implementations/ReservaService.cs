@@ -46,6 +46,36 @@ public class ReservaService : IReservaService
         };
     }
 
+    private static ReservaPublicaResponseDto MapToPublicDto(Reserva reserva)
+{
+    var itens = reserva.Itens.Select(item =>
+        {
+            var subtotal = item.Quantidade * item.PrecoUnitario;
+
+            return new ItemReservaPublicaResponseDto
+            {
+                Produto = item.VariacaoProduto.Produto.Nome,
+                Tamanho =item.VariacaoProduto.Tamanho,
+                Quantidade = item.Quantidade,
+                PrecoUnitario = item.PrecoUnitario,
+                Subtotal = subtotal
+            };
+        })
+        .ToList();
+
+        return new ReservaPublicaResponseDto
+        {
+            CodigoReserva = reserva.CodigoReserva,
+            DataReserva = reserva.DataReserva,
+            Status = reserva.Status,
+            DataAtualizacao = reserva.DataAtualizacao,
+
+            ValorTotal = itens.Sum(item => item.Subtotal),
+
+            Itens = itens
+        };
+    }
+
         private static bool TransicaoStatusPermitida(
         StatusReserva statusAtual,
         StatusReserva novoStatus)
@@ -77,10 +107,13 @@ public class ReservaService : IReservaService
         return reserva is null ? null : MapToDto(reserva);
     }
 
-    public async Task<ReservaResponseDto?> GetByCodigoAsync(string codigoReserva)
+    public async Task<ReservaPublicaResponseDto?>GetByCodigoAsync(string codigoReserva)
     {
-        var reserva = await _reservaRepository.GetByCodigoAsync(codigoReserva);
-        return reserva is null ? null : MapToDto(reserva);
+        var codigoNormalizado = codigoReserva.Trim().ToUpperInvariant();
+
+        var reserva = await _reservaRepository.GetByCodigoAsync(codigoNormalizado);
+
+        return reserva is null ? null : MapToPublicDto(reserva);
     }
 
     public async Task<ReservaResponseDto> CreateAsync(CriarReservaDto dto, int? membroVipAutenticadoId)

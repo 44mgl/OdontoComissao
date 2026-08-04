@@ -1,5 +1,6 @@
 using ApiOdonto.DTOs.Comissao;
 using ApiOdonto.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiOdonto.Controllers;
@@ -16,6 +17,7 @@ public class MembroComissaoController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<List<MembroComissaoResponseDto>>> GetAll()
     {
         var membros = await _membroComissaoService.GetAllAsync();
@@ -23,6 +25,7 @@ public class MembroComissaoController : ControllerBase
     }
 
     [HttpGet("ordenados")]
+    [AllowAnonymous]
     public async Task<ActionResult<List<MembroComissaoResponseDto>>> GetOrdenados()
     {
         var membros = await _membroComissaoService.GetOrdenadosAsync();
@@ -30,6 +33,7 @@ public class MembroComissaoController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<MembroComissaoResponseDto>> GetById(int id)
     {
         var membro = await _membroComissaoService.GetByIdAsync(id);
@@ -40,6 +44,7 @@ public class MembroComissaoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<MembroComissaoResponseDto>> Create([FromBody] CriarMembroComissaoDto dto)
     {
         var membro = await _membroComissaoService.CreateAsync(dto);
@@ -47,6 +52,7 @@ public class MembroComissaoController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Update(int id, [FromBody] AtualizarMembroComissaoDto dto)
     {
         var atualizado = await _membroComissaoService.UpdateAsync(id, dto);
@@ -54,6 +60,7 @@ public class MembroComissaoController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Delete(int id)
     {
         var deletado = await _membroComissaoService.DeleteAsync(id);

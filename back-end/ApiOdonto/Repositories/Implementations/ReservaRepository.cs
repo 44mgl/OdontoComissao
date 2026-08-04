@@ -26,11 +26,11 @@ public class ReservaRepository : IReservaRepository
             .FirstOrDefaultAsync(r => r.Id == id);
 
     public Task<Reserva?> GetByCodigoAsync(string codigoReserva) =>
-        _context.Reservas
-            .Include(r => r.Itens)
-            .ThenInclude(i => i.VariacaoProduto)
-            .FirstOrDefaultAsync(r => r.CodigoReserva == codigoReserva);
-
+        _context.Reservas.AsNoTracking()
+        .Include(r => r.Itens)
+        .ThenInclude(i => i.VariacaoProduto)
+        .ThenInclude(v => v.Produto)
+        .FirstOrDefaultAsync(r => r.CodigoReserva == codigoReserva);
     public Task<bool> CodigoExistsAsync(string codigoReserva) =>
         _context.Reservas.AnyAsync(r => r.CodigoReserva == codigoReserva);
 

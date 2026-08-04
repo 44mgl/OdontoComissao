@@ -1,5 +1,6 @@
 using ApiOdonto.DTOs.Eventos;
 using ApiOdonto.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiOdonto.Controllers;
@@ -16,6 +17,7 @@ public class EventoController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<List<EventoResponseDto>>> GetAll()
     {
         var eventos = await _eventoService.GetAllAsync();
@@ -23,6 +25,7 @@ public class EventoController : ControllerBase
     }
 
     [HttpGet("proximos")]
+    [AllowAnonymous]
     public async Task<ActionResult<List<EventoResponseDto>>> GetProximosEventos()
     {
         var eventos = await _eventoService.GetProximosEventosAsync();
@@ -30,6 +33,7 @@ public class EventoController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<EventoResponseDto>> GetById(int id)
     {
         var evento = await _eventoService.GetByIdAsync(id);
@@ -40,6 +44,7 @@ public class EventoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<EventoResponseDto>> Create([FromBody] CriarEventoDto dto)
     {
         var evento = await _eventoService.CreateAsync(dto);
@@ -47,6 +52,7 @@ public class EventoController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Update(int id, [FromBody] AtualizarEventoDto dto)
     {
         var atualizado = await _eventoService.UpdateAsync(id, dto);
@@ -54,6 +60,7 @@ public class EventoController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Delete(int id)
     {
         var deletado = await _eventoService.DeleteAsync(id);
