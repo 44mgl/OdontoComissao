@@ -1,4 +1,5 @@
 using ApiOdonto.DTOs.Administradores;
+using ApiOdonto.Exceptions;
 using ApiOdonto.Models;
 using ApiOdonto.Repositories.Interfaces;
 using ApiOdonto.Services.Interfaces;
@@ -37,7 +38,7 @@ public class AdministradorService : IAdministradorService
         if (await _administradorRepository
             .EmailExistsAsync(email))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Já existe um administrador com esse e-mail.");
         }
 
@@ -76,7 +77,7 @@ public class AdministradorService : IAdministradorService
 
         if (await _administradorRepository.EmailExistsAsync(email, id))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Já existe um administrador com esse e-mail.");
         }
 
@@ -86,7 +87,7 @@ public class AdministradorService : IAdministradorService
 
             if (quantidadeAtivos <= 1)
             {
-                throw new InvalidOperationException(
+                throw new RegraNegocioException(
                     "O último administrador ativo não pode ser desativado.");
             }
         

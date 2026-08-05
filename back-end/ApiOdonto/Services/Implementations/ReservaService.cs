@@ -1,5 +1,6 @@
 using ApiOdonto.DTOs.Reservas;
 using ApiOdonto.Enums;
+using ApiOdonto.Exceptions;
 using ApiOdonto.Models;
 using ApiOdonto.Repositories.Interfaces;
 using ApiOdonto.Services.Interfaces;
@@ -139,20 +140,20 @@ public class ReservaService : IReservaService
             switch (membroVip)
             {
                 case null:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         "O membro VIP informado não existe.");
 
                 case { Ativo: false }:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         "O membro VIP informado está inativo.");
 
                 case { DataValidade: null }:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         "O acesso VIP não possui validade.");
 
                 case { DataValidade: var dataValidade }
                     when dataValidade <= DateTime.UtcNow:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         "O acesso VIP está vencido.");
             }
         }
@@ -165,25 +166,25 @@ public class ReservaService : IReservaService
             switch (variacao)
             {
                 case null:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         $"A variação {itemDto.VariacaoProdutoId} não existe.");
 
                 case { Ativo: false }:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         $"A variação {variacao.Id} está inativa.");
 
                 case { Produto: { Ativo: false } }:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         $"O produto {variacao.Produto.Nome} está inativo.");
 
                 case { QuantidadeDisponivel: var estoque }
                     when estoque < itemDto.Quantidade:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         $"Estoque insuficiente para {variacao.Produto.Nome}, tamanho {variacao.Tamanho}.");
 
                 case { Produto: { ExclusivoVip: true } }
                     when membroVip is null:
-                    throw new InvalidOperationException(
+                    throw new RegraNegocioException(
                         $"O produto {variacao.Produto.Nome} é exclusivo para membros VIP.");
 
                 default:
@@ -231,7 +232,7 @@ public class ReservaService : IReservaService
 
         if (!TransicaoStatusPermitida(reserva.Status, dto.Status))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 $"Não é permitido alterar uma reserva de " + $"{reserva.Status} para {dto.Status}.");
         }
 

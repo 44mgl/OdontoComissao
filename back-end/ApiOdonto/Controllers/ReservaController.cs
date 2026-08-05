@@ -59,7 +59,7 @@ public class ReservaController : ControllerBase
 
             if (!int.TryParse(idClaim, out var membroVipId))
             {
-                throw new InvalidOperationException("O token VIP não possui uma identificação válida.");
+                throw new UnauthorizedAccessException("O token VIP não possui uma identificação válida.");
             }
 
             membroVipAutenticadoId = membroVipId;

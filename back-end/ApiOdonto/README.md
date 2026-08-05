@@ -1,161 +1,410 @@
-# 🦷 Odonto Comissão — API
+# Odonto Comissão — API
 
-API REST responsável pelo back-end da aplicação **Odonto Comissão**. Ela centraliza o gerenciamento de eventos, publicações, integrantes da comissão, membros VIP, produtos, variações de estoque e reservas.
+API REST do projeto **Odonto Comissão**, criada para gerenciar as informações públicas de uma turma de Odontologia, o catálogo de produtos, os acessos VIP e as reservas sem pagamento pelo site.
 
-O projeto foi construído com **ASP.NET Core 10**, utiliza **Entity Framework Core** para acesso aos dados, **SQLite** como banco de dados e autenticação de administradores por **JWT**.
+O backend foi desenvolvido com **ASP.NET Core 10**, **Entity Framework Core** e **SQL Server**. A autenticação de administradores e membros VIP utiliza JWT armazenado em cookie seguro.
 
 ## Sumário
 
-- [Como a aplicação funciona](#como-a-aplicação-funciona)
-- [Tecnologias e pacotes](#tecnologias-e-pacotes)
+- [Funcionalidades](#funcionalidades)
+- [Arquitetura](#arquitetura)
+- [Tecnologias](#tecnologias)
 - [Como executar](#como-executar)
-- [Autenticação](#autenticação)
+- [Banco de dados](#banco-de-dados)
+- [Autenticação e autorização](#autenticação-e-autorização)
+- [CORS e consumo pelo front-end](#cors-e-consumo-pelo-front-end)
+- [Regras de negócio importantes](#regras-de-negócio-importantes)
 - [Endpoints](#endpoints)
-- [Corpos das requisições](#corpos-das-requisições)
-- [Status e respostas](#status-e-respostas)
+- [Exemplos de requisições](#exemplos-de-requisições)
+- [Respostas HTTP e middleware](#respostas-http-e-middleware)
 - [Estrutura do projeto](#estrutura-do-projeto)
 
-## Como a aplicação funciona
+## Funcionalidades
 
-A API segue uma arquitetura em camadas:
+- página inicial alimentada por publicações e destaques;
+- cronograma de próximos eventos;
+- apresentação dos membros da comissão;
+- catálogo público de produtos ativos;
+- catálogo exclusivo para membros VIP autenticados;
+- reservas de produtos sem pagamento pela aplicação;
+- consulta pública de uma reserva por código;
+- controle de estoque por variação de produto;
+- autenticação de administradores e membros VIP;
+- painel administrativo preparado para gerenciar administradores, eventos, publicações, comissão, membros VIP, produtos, variações e reservas.
+
+## Arquitetura
+
+A API utiliza uma arquitetura em camadas:
 
 ```text
-Cliente / Front-end
-        │
-        ▼
-   Controllers      recebem e validam as requisições HTTP
-        │
-        ▼
-    Services        aplicam as regras de negócio
-        │
-        ▼
-  Repositories      realizam o acesso aos dados
-        │
-        ▼
- Entity Framework Core + SQLite
+Front-end / Cliente HTTP
+          |
+          v
+     Controllers       endpoints, autorização e respostas HTTP
+          |
+          v
+       Services        regras de negócio e mapeamento dos DTOs
+          |
+          v
+     Repositories      consultas e persistência
+          |
+          v
+ Entity Framework Core
+          |
+          v
+       SQL Server
 ```
 
-Os dados recebidos e devolvidos pela API são definidos por **DTOs**, evitando expor diretamente as entidades do banco. Erros não tratados passam pelo `ExceptionMiddleware`, que padroniza a resposta enviada ao cliente.
+Os **DTOs** definem os dados aceitos e devolvidos pela API. As entidades do banco não são expostas diretamente, especialmente nas consultas públicas.
 
-Principais funcionalidades:
-
-- autenticação de administradores;
-- cadastro e divulgação de eventos;
-- gerenciamento de publicações e destaques;
-- apresentação dos membros da comissão;
-- cadastro de membros VIP;
-- catálogo de produtos com variações e estoque;
-- criação e acompanhamento de reservas.
-
-> [!NOTE]
-> Atualmente, somente `logout` e `me` possuem o atributo `[Authorize]`. Os demais endpoints estão acessíveis sem autenticação até que regras de autorização sejam adicionadas aos seus controllers.
-
-## Tecnologias e pacotes
-
-### Stack
+## Tecnologias
 
 | Tecnologia | Uso |
 |---|---|
-| .NET 10 / ASP.NET Core | Plataforma e construção da API REST |
-| Entity Framework Core | ORM e persistência dos dados |
-| SQLite | Banco de dados local |
-| JWT Bearer | Autenticação e validação de tokens |
-| Swagger / OpenAPI | Documentação e teste interativo dos endpoints |
+| .NET 10 / ASP.NET Core | Construção da API REST |
+| Entity Framework Core 10 | ORM, relacionamentos e migrations |
+| SQL Server / LocalDB | Banco de dados relacional |
+| JWT Bearer | Autenticação e autorização por perfil |
+| BCrypt | Hash e verificação de senhas |
+| Swagger / OpenAPI | Exploração e testes manuais dos endpoints |
+| DotNetEnv | Leitura das configurações do arquivo `.env` |
 
-### Pacotes NuGet
+### Pacotes NuGet principais
 
 | Pacote | Versão | Finalidade |
 |---|---:|---|
-| `BCrypt.Net-Next` | 4.2.0 | Criação e verificação segura de hashes de senha |
-| `DotNetEnv` | 3.2.0 | Leitura das variáveis do arquivo `.env` |
-| `Microsoft.AspNetCore.Authentication.JwtBearer` | 10.0.10 | Autenticação JWT Bearer |
-| `Microsoft.AspNetCore.OpenApi` | 10.0.8 | Suporte à especificação OpenAPI |
-| `Microsoft.EntityFrameworkCore` | 10.0.10 | ORM e acesso ao banco |
-| `Microsoft.EntityFrameworkCore.Design` | 10.0.10 | Recursos de design e migrations do EF Core |
-| `Microsoft.EntityFrameworkCore.Sqlite` | 10.0.10 | Provider SQLite para o EF Core |
-| `Microsoft.EntityFrameworkCore.Tools` | 10.0.10 | Ferramentas de migrations do EF Core |
-| `Swashbuckle.AspNetCore` | 10.2.3 | Geração do Swagger e Swagger UI |
+| `BCrypt.Net-Next` | 4.2.0 | Hash seguro de senhas |
+| `DotNetEnv` | 3.2.0 | Leitura do `.env` |
+| `Microsoft.AspNetCore.Authentication.JwtBearer` | 10.0.10 | Autenticação JWT |
+| `Microsoft.EntityFrameworkCore` | 10.0.10 | ORM |
+| `Microsoft.EntityFrameworkCore.Design` | 10.0.10 | Suporte às migrations |
+| `Microsoft.EntityFrameworkCore.SqlServer` | 10.0.10 | Provider do SQL Server |
+| `Microsoft.EntityFrameworkCore.Tools` | 10.0.10 | Ferramentas do EF Core |
+| `Swashbuckle.AspNetCore` | 10.2.3 | Swagger UI |
 
 ## Como executar
 
 ### Pré-requisitos
 
 - [.NET SDK 10](https://dotnet.microsoft.com/download);
-- ferramenta `dotnet-ef`, caso queira criar ou aplicar migrations.
+- SQL Server LocalDB, SQL Server Express ou outra instância compatível;
+- ferramenta `dotnet-ef` para gerenciar migrations.
 
 ### 1. Entre na pasta da API
 
-```bash
+```powershell
 cd back-end/ApiOdonto
 ```
 
-### 2. Configure as variáveis de ambiente
+### 2. Configure o banco
 
-Copie `.env.example` para um novo arquivo chamado `.env` e preencha a chave JWT:
+O ambiente local está preparado no `appsettings.json` para utilizar:
+
+```text
+Server=(localdb)\MSSQLLocalDB
+Database=OdontoComissaoDb
+```
+
+Para outro servidor, altere a connection string `DefaultConnection` de acordo com o ambiente.
+
+### 3. Configure as variáveis de ambiente
+
+Copie `.env.example` para `.env` e preencha os valores:
 
 ```env
-JWT_KEY=coloque-aqui-uma-chave-secreta-longa-e-segura
+JWT_KEY=uma-chave-secreta-longa-e-aleatoria
 JWT_ISSUER=ApiOdonto
 JWT_AUDIENCE=OdontoComissaoFrontend
 JWT_EXPIRES_MINUTES=120
+
+ADMIN_INICIAL_NOME=Administrador Inicial
+ADMIN_INICIAL_EMAIL=admin@exemplo.com
+ADMIN_INICIAL_SENHA=uma-senha-forte
+
+FRONTEND_URL=http://localhost:5173
 ```
 
-> [!IMPORTANT]
-> Não publique o arquivo `.env` nem utilize a chave de exemplo em produção.
+O arquivo `.env` é ignorado pelo Git e não deve ser publicado. O `.env.example` deve conter apenas valores vazios ou exemplos que não sejam segredos reais.
 
-### 3. Restaure os pacotes
+### 4. Restaure as dependências
 
-```bash
+```powershell
 dotnet restore
 ```
 
-### 4. Aplique as migrations
+Caso `dotnet-ef` não esteja instalado:
 
-O repositório já possui um banco `ApiOdonto.db`. Para criar ou atualizar o banco a partir das migrations:
-
-```bash
-dotnet ef database update
-```
-
-Caso a ferramenta ainda não esteja instalada:
-
-```bash
+```powershell
 dotnet tool install --global dotnet-ef
 ```
 
-### 5. Inicie a API
+### 5. Aplique as migrations
 
-```bash
+```powershell
+dotnet ef database update
+```
+
+O `DbInitializer` também executa `MigrateAsync()` na inicialização da API. Em um banco vazio, ele cria o primeiro administrador com as variáveis `ADMIN_INICIAL_*`. Se já existir algum administrador, nenhum novo registro é criado.
+
+### 6. Inicie a API
+
+```powershell
 dotnet run
 ```
 
-Por padrão, os perfis locais utilizam:
+Perfis locais:
 
 - HTTP: `http://localhost:5255`
 - HTTPS: `https://localhost:7103`
 - Swagger: `https://localhost:7103/swagger`
 
-O Swagger é habilitado quando `ASPNETCORE_ENVIRONMENT=Development`.
+O Swagger é habilitado no ambiente `Development`.
 
-## Autenticação
+## Banco de dados
 
-O login procura um administrador ativo pelo e-mail e compara a senha enviada com o hash BCrypt armazenado no banco. Quando as credenciais são válidas, a API:
+O projeto utiliza SQL Server e possui uma migration inicial própria desse provider. A migration cria as tabelas, chaves estrangeiras e índices do sistema.
 
-1. gera um JWT assinado com `HMAC-SHA256`;
-2. devolve o token no corpo da resposta;
-3. grava o mesmo token no cookie `access_token`.
+Restrições importantes no banco:
 
-O cookie é configurado como `HttpOnly`, `Secure` e `SameSite=None`. Nas rotas protegidas, o middleware JWT lê o token desse cookie.
+- e-mail de administrador único;
+- e-mail e número de identificação VIP únicos;
+- código de reserva único;
+- combinação de produto e tamanho da variação única;
+- `Produto.Preco` e `ItemReserva.PrecoUnitario` com precisão `decimal(18,2)`.
 
-Ao consumir a API pelo navegador em outra origem, envie credenciais na requisição:
+Os dados antigos do SQLite não são utilizados pela configuração atual. A migração realizada substituiu o provider e a estrutura das migrations, não transferiu registros do arquivo SQLite.
+
+## Autenticação e autorização
+
+Existem dois perfis autenticáveis:
+
+| Perfil | Credencial de login | Role JWT |
+|---|---|---|
+| Administrador | E-mail e senha | `Administrador` |
+| Membro VIP | Número de identificação e senha | `VIP` |
+
+Após um login válido, a API:
+
+1. verifica a senha com BCrypt;
+2. gera um JWT assinado;
+3. devolve informações do login no corpo;
+4. grava o JWT no cookie `access_token`.
+
+O cookie utiliza:
+
+- `HttpOnly=true`: JavaScript não consegue ler o token;
+- `Secure=true`: o cookie é enviado por HTTPS;
+- `SameSite=None`: permite comunicação entre front-end e API em origens diferentes;
+- prazo de expiração definido por `JWT_EXPIRES_MINUTES`.
+
+Os endpoints administrativos exigem:
+
+```csharp
+[Authorize(Roles = "Administrador")]
+```
+
+O catálogo VIP exige:
+
+```csharp
+[Authorize(Roles = "VIP")]
+```
+
+## CORS e consumo pelo front-end
+
+A política CORS chamada `Frontend` permite somente a origem informada por `FRONTEND_URL`, com métodos, headers e credenciais.
+
+No front-end, requisições que dependem do cookie devem usar `credentials: "include"`:
 
 ```js
-fetch("https://localhost:7103/api/Auth/me", {
+const resposta = await fetch("https://localhost:7103/api/Auth/me", {
   credentials: "include"
 });
 ```
 
-### Exemplo de login
+Não combine `AllowAnyOrigin()` com `AllowCredentials()`. Em produção, configure `FRONTEND_URL` com o endereço real do site, sem barra no final.
+
+## Regras de negócio importantes
+
+### Reservas
+
+- uma reserva deve possuir pelo menos um item;
+- quantidades devem ser maiores que zero;
+- itens repetidos da mesma variação são agrupados;
+- todos os itens são validados antes da gravação;
+- se qualquer item for inválido, a reserva inteira é rejeitada;
+- produto e variação precisam existir e estar ativos;
+- o estoque precisa atender à quantidade total solicitada;
+- o preço é obtido do banco, nunca recebido do cliente;
+- o estoque é reduzido quando a reserva é criada;
+- o estoque é devolvido quando uma reserva elegível é cancelada;
+- produtos exclusivos exigem um membro VIP autenticado, ativo e dentro da validade;
+- o vínculo VIP vem do JWT, não de um ID enviado no corpo;
+- cada reserva recebe um código aleatório no formato `RES-...`.
+
+Transições de status permitidas:
+
+```text
+Pendente   -> Confirmada ou Cancelada
+Confirmada -> Separada ou Cancelada
+Separada   -> Retirada ou Cancelada
+```
+
+### Produtos e variações
+
+- o catálogo público devolve somente produtos ativos e não exclusivos;
+- o catálogo VIP devolve produtos exclusivos ativos;
+- somente variações ativas aparecem nos catálogos;
+- não pode existir mais de uma variação com o mesmo tamanho para o mesmo produto;
+- tamanho é normalizado para letras maiúsculas;
+- preço e estoque são controlados no backend.
+
+### Membros VIP
+
+- e-mail e identificação são normalizados e não podem se repetir;
+- membros ativos precisam possuir validade futura;
+- senhas são armazenadas somente como hash BCrypt;
+- o login falha para membro inexistente, inativo, vencido ou com senha incorreta.
+
+### Administradores
+
+- e-mails são normalizados e não podem se repetir;
+- senhas possuem hash BCrypt;
+- o último administrador ativo não pode ser desativado;
+- somente administradores autenticados podem gerenciar outros administradores.
+
+### Eventos
+
+O endpoint público de próximos eventos devolve somente eventos ativos, futuros e com status `Agendado`.
+
+## Endpoints
+
+Salvo quando indicado, as rotas abaixo usam a base:
+
+```text
+https://localhost:7103/api
+```
+
+Legenda:
+
+- **Público**: não exige autenticação;
+- **Admin**: exige role `Administrador`;
+- **VIP**: exige role `VIP`.
+
+### Autenticação administrativa — `/Auth`
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/Auth/login` | Público | Autentica um administrador e cria o cookie JWT |
+| `POST` | `/Auth/logout` | Autenticado | Remove o cookie de autenticação |
+| `GET` | `/Auth/me` | Autenticado | Retorna as claims do usuário autenticado |
+
+### Autenticação VIP — fora do prefixo `/api`
+
+| Método | URL completa | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `https://localhost:7103/VipAuth/login` | Público | Autentica um membro VIP e cria o cookie JWT |
+
+### Administradores — `/Administrador`
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/Administrador` | Admin | Lista os administradores |
+| `GET` | `/Administrador/{id}` | Admin | Busca um administrador |
+| `POST` | `/Administrador` | Admin | Cadastra um administrador |
+| `PUT` | `/Administrador/{id}` | Admin | Atualiza dados, senha opcional e estado ativo |
+
+### Eventos — `/Evento`
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/Evento/proximos` | Público | Lista eventos ativos, agendados e futuros |
+| `GET` | `/Evento` | Admin | Lista todos os eventos |
+| `GET` | `/Evento/{id}` | Admin | Busca um evento |
+| `POST` | `/Evento` | Admin | Cadastra um evento |
+| `PUT` | `/Evento/{id}` | Admin | Atualiza um evento |
+| `DELETE` | `/Evento/{id}` | Admin | Exclui um evento |
+
+Status: `1` Agendado, `2` Em andamento, `3` Concluído e `4` Cancelado.
+
+### Publicações — `/Publicacao`
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/Publicacao/destaques` | Público | Lista publicações ativas em destaque |
+| `GET` | `/Publicacao` | Admin | Lista todas as publicações |
+| `GET` | `/Publicacao/{id}` | Admin | Busca uma publicação |
+| `POST` | `/Publicacao` | Admin | Cadastra uma publicação |
+| `PUT` | `/Publicacao/{id}` | Admin | Atualiza uma publicação |
+| `DELETE` | `/Publicacao/{id}` | Admin | Exclui uma publicação |
+
+### Membros da comissão — `/MembroComissao`
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/MembroComissao/ordenados` | Público | Lista membros ativos na ordem de exibição |
+| `GET` | `/MembroComissao` | Admin | Lista todos os membros |
+| `GET` | `/MembroComissao/{id}` | Admin | Busca um membro |
+| `POST` | `/MembroComissao` | Admin | Cadastra um membro |
+| `PUT` | `/MembroComissao/{id}` | Admin | Atualiza um membro |
+| `DELETE` | `/MembroComissao/{id}` | Admin | Exclui um membro |
+
+### Membros VIP — `/MembroVip`
+
+Todos os endpoints desta seção exigem role `Administrador`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/MembroVip` | Lista todos os membros VIP |
+| `GET` | `/MembroVip/{id}` | Busca por ID |
+| `GET` | `/MembroVip/email?email={email}` | Busca por e-mail |
+| `GET` | `/MembroVip/identificacao?numeroIdentificacao={numero}` | Busca por identificação |
+| `POST` | `/MembroVip` | Cadastra um membro VIP |
+| `PUT` | `/MembroVip/{id}` | Atualiza um membro VIP |
+| `DELETE` | `/MembroVip/{id}` | Exclui um membro VIP |
+
+### Produtos — `/Produto`
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/Produto/catalogo` | Público | Catálogo de produtos não exclusivos ativos |
+| `GET` | `/Produto/vip` | VIP | Catálogo de produtos VIP ativos |
+| `GET` | `/Produto` | Admin | Lista todos os produtos |
+| `GET` | `/Produto/categoria?categoria={categoria}` | Admin | Filtra por categoria |
+| `GET` | `/Produto/{id}` | Admin | Busca um produto |
+| `POST` | `/Produto` | Admin | Cadastra um produto |
+| `PUT` | `/Produto/{id}` | Admin | Atualiza um produto |
+| `PATCH` | `/Produto/{id}/status` | Admin | Ativa ou desativa um produto |
+| `DELETE` | `/Produto/{id}` | Admin | Exclui um produto |
+
+### Variações de produto — `/VariacaoProduto`
+
+Todos os endpoints desta seção exigem role `Administrador`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/VariacaoProduto` | Lista todas as variações |
+| `GET` | `/VariacaoProduto/produto/{produtoId}` | Lista variações de um produto |
+| `GET` | `/VariacaoProduto/{id}` | Busca uma variação |
+| `POST` | `/VariacaoProduto` | Cadastra uma variação |
+| `PUT` | `/VariacaoProduto/{id}` | Atualiza uma variação |
+| `PATCH` | `/VariacaoProduto/{id}/estoque` | Atualiza o estoque |
+| `DELETE` | `/VariacaoProduto/{id}` | Exclui uma variação |
+
+### Reservas — `/Reserva`
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/Reserva` | Público ou VIP | Cria uma reserva; associa o VIP autenticado quando houver |
+| `GET` | `/Reserva/codigo?codigoReserva={codigo}` | Público | Consulta segura pelo código |
+| `GET` | `/Reserva` | Admin | Lista todas as reservas e dados administrativos |
+| `GET` | `/Reserva/{id}` | Admin | Busca uma reserva pelo ID |
+| `PATCH` | `/Reserva/{id}/status` | Admin | Altera o status conforme as transições permitidas |
+
+Status: `1` Pendente, `2` Confirmada, `3` Separada, `4` Retirada e `5` Cancelada.
+
+## Exemplos de requisições
+
+### Login administrativo
 
 ```http
 POST /api/Auth/login
@@ -163,145 +412,33 @@ Content-Type: application/json
 
 {
   "email": "admin@exemplo.com",
-  "senha": "minhaSenha"
+  "senha": "uma-senha-forte"
 }
 ```
 
-## Endpoints
+### Login VIP
 
-A URL-base usada nos exemplos é:
+```http
+POST /VipAuth/login
+Content-Type: application/json
 
-```text
-https://localhost:7103/api
+{
+  "numeroIdentificacao": "VIP-001",
+  "senha": "senhaSegura"
+}
 ```
 
-### Autenticação — `/Auth`
-
-| Método | Rota | Protegida | Descrição |
-|---|---|:---:|---|
-| `POST` | `/Auth/login` | Não | Autentica um administrador e cria o cookie JWT |
-| `POST` | `/Auth/logout` | Sim | Remove o cookie de autenticação |
-| `GET` | `/Auth/me` | Sim | Retorna os dados do administrador autenticado |
-
-### Eventos — `/Evento`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/Evento` | Lista todos os eventos |
-| `GET` | `/Evento/proximos` | Lista os próximos eventos |
-| `GET` | `/Evento/{id}` | Busca um evento pelo ID |
-| `POST` | `/Evento` | Cadastra um evento |
-| `PUT` | `/Evento/{id}` | Atualiza um evento |
-| `DELETE` | `/Evento/{id}` | Exclui um evento |
-
-Status de evento: `1` Agendado, `2` Em andamento, `3` Concluído e `4` Cancelado.
-
-### Membros da comissão — `/MembroComissao`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/MembroComissao` | Lista todos os membros |
-| `GET` | `/MembroComissao/ordenados` | Lista os membros na ordem de exibição |
-| `GET` | `/MembroComissao/{id}` | Busca um membro pelo ID |
-| `POST` | `/MembroComissao` | Cadastra um membro |
-| `PUT` | `/MembroComissao/{id}` | Atualiza um membro |
-| `DELETE` | `/MembroComissao/{id}` | Exclui um membro |
-
-### Membros VIP — `/MembroVip`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/MembroVip` | Lista todos os membros VIP |
-| `GET` | `/MembroVip/{id}` | Busca um membro VIP pelo ID |
-| `GET` | `/MembroVip/email?email={email}` | Busca pelo e-mail |
-| `GET` | `/MembroVip/identificacao?numeroIdentificacao={numero}` | Busca pelo número de identificação |
-| `POST` | `/MembroVip` | Cadastra um membro VIP |
-| `PUT` | `/MembroVip/{id}` | Atualiza um membro VIP |
-| `DELETE` | `/MembroVip/{id}` | Exclui um membro VIP |
-
-### Produtos — `/Produto`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/Produto` | Lista todos os produtos |
-| `GET` | `/Produto/categoria?categoria={categoria}` | Filtra produtos por categoria |
-| `GET` | `/Produto/{id}` | Busca um produto pelo ID |
-| `POST` | `/Produto` | Cadastra um produto |
-| `PUT` | `/Produto/{id}` | Atualiza um produto |
-| `PATCH` | `/Produto/{id}/status` | Ativa ou desativa um produto; recebe `true` ou `false` |
-| `DELETE` | `/Produto/{id}` | Exclui um produto |
-
-### Variações de produtos — `/VariacaoProduto`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/VariacaoProduto` | Lista todas as variações |
-| `GET` | `/VariacaoProduto/produto/{produtoId}` | Lista as variações de um produto |
-| `GET` | `/VariacaoProduto/{id}` | Busca uma variação pelo ID |
-| `POST` | `/VariacaoProduto` | Cadastra uma variação |
-| `PUT` | `/VariacaoProduto/{id}` | Atualiza uma variação |
-| `PATCH` | `/VariacaoProduto/{id}/estoque` | Atualiza a quantidade disponível |
-| `DELETE` | `/VariacaoProduto/{id}` | Exclui uma variação |
-
-### Publicações — `/Publicacao`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/Publicacao` | Lista todas as publicações |
-| `GET` | `/Publicacao/destaques` | Lista as publicações em destaque |
-| `GET` | `/Publicacao/{id}` | Busca uma publicação pelo ID |
-| `POST` | `/Publicacao` | Cadastra uma publicação |
-| `PUT` | `/Publicacao/{id}` | Atualiza uma publicação |
-| `DELETE` | `/Publicacao/{id}` | Exclui uma publicação |
-
-### Reservas — `/Reserva`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/Reserva` | Lista todas as reservas |
-| `GET` | `/Reserva/{id}` | Busca uma reserva pelo ID |
-| `GET` | `/Reserva/codigo?codigoReserva={codigo}` | Busca pelo código da reserva |
-| `POST` | `/Reserva` | Cria uma reserva com um ou mais itens |
-| `PATCH` | `/Reserva/{id}/status` | Atualiza o status da reserva |
-
-Status de reserva: `1` Pendente, `2` Confirmada, `3` Separada, `4` Retirada e `5` Cancelada.
-
-## Corpos das requisições
-
-Os exemplos abaixo mostram os campos aceitos nas operações de criação. Nas atualizações completas via `PUT`, também é enviado o campo `ativo`.
-
-<details>
-<summary><strong>Criar evento</strong></summary>
+### Criar administrador
 
 ```json
 {
-  "titulo": "Baile de formatura",
-  "descricao": "Celebração da turma de Odontologia",
-  "dataHora": "2027-01-23T20:00:00",
-  "local": "Salão Principal",
-  "categoria": "Formatura",
-  "status": 1,
-  "imagemUrl": "https://exemplo.com/evento.jpg"
+  "nome": "Administrador",
+  "email": "novo-admin@exemplo.com",
+  "senha": "senhaComOitoCaracteres"
 }
 ```
-</details>
 
-<details>
-<summary><strong>Criar membro da comissão</strong></summary>
-
-```json
-{
-  "nome": "Ana Souza",
-  "cargo": "Presidente",
-  "descricao": "Responsável pela organização geral",
-  "fotoUrl": "https://exemplo.com/ana.jpg",
-  "ordemExibicao": 1
-}
-```
-</details>
-
-<details>
-<summary><strong>Criar membro VIP</strong></summary>
+### Criar membro VIP
 
 ```json
 {
@@ -310,28 +447,24 @@ Os exemplos abaixo mostram os campos aceitos nas operações de criação. Nas a
   "email": "joao@exemplo.com",
   "telefone": "11999999999",
   "senha": "senhaSegura",
-  "dataValidade": "2027-12-31T23:59:59"
+  "dataValidade": "2027-12-31T23:59:59Z"
 }
 ```
-</details>
 
-<details>
-<summary><strong>Criar produto</strong></summary>
+### Criar produto
 
 ```json
 {
   "nome": "Camiseta da turma",
-  "descricao": "Camiseta oficial da comissão",
+  "descricao": "Camiseta oficial",
   "preco": 59.90,
   "imagemUrl": "https://exemplo.com/camiseta.jpg",
   "categoria": "Vestuário",
   "exclusivoVip": false
 }
 ```
-</details>
 
-<details>
-<summary><strong>Criar variação de produto</strong></summary>
+### Criar variação
 
 ```json
 {
@@ -341,38 +474,14 @@ Os exemplos abaixo mostram os campos aceitos nas operações de criação. Nas a
 }
 ```
 
-Para alterar somente o estoque:
+### Criar reserva
 
-```json
-{
-  "quantidadeDisponivel": 15
-}
-```
-</details>
-
-<details>
-<summary><strong>Criar publicação</strong></summary>
-
-```json
-{
-  "titulo": "Novidades da comissão",
-  "descricao": "Confira as novidades deste mês.",
-  "imagemUrl": "https://exemplo.com/publicacao.jpg",
-  "tipo": "Notícia",
-  "ordemExibicao": 1,
-  "destaque": true
-}
-```
-</details>
-
-<details>
-<summary><strong>Criar reserva</strong></summary>
+O cliente não envia preço nem `membroVipId`:
 
 ```json
 {
   "nomeCliente": "Maria Oliveira",
   "contato": "11988888888",
-  "membroVipId": null,
   "observacoes": "Retirada no período da tarde",
   "itens": [
     {
@@ -383,48 +492,65 @@ Para alterar somente o estoque:
 }
 ```
 
-Para alterar somente o status:
+### Atualizar status da reserva
 
 ```json
 {
   "status": 2
 }
 ```
-</details>
 
-## Status e respostas
+## Respostas HTTP e middleware
 
-| Código | Significado |
+| Código | Situação |
 |---:|---|
-| `200 OK` | Consulta ou login realizado com sucesso |
-| `201 Created` | Recurso criado com sucesso |
+| `200 OK` | Consulta, login ou atualização com resposta |
+| `201 Created` | Recurso criado |
 | `204 No Content` | Atualização, exclusão ou logout concluído |
-| `400 Bad Request` | Dados inválidos ou regra de negócio não atendida |
-| `401 Unauthorized` | Credenciais inválidas ou autenticação ausente |
+| `400 Bad Request` | DTO inválido ou regra de negócio não atendida |
+| `401 Unauthorized` | Login inválido, token ausente ou identidade inválida |
+| `403 Forbidden` | Usuário autenticado sem a role necessária |
 | `404 Not Found` | Recurso não encontrado |
-| `500 Internal Server Error` | Erro inesperado no servidor |
+| `500 Internal Server Error` | Falha inesperada ou configuração interna incorreta |
 
-As validações dos DTOs verificam campos obrigatórios, formatos de e-mail, tamanhos mínimos, valores não negativos e IDs válidos.
+O `ExceptionMiddleware` trata globalmente:
+
+```text
+RegraNegocioException      -> 400
+UnauthorizedAccessException -> 401
+KeyNotFoundException       -> 404
+Exception não esperada     -> 500
+```
+
+Erros 500 recebem uma mensagem genérica, evitando expor detalhes internos. As violações esperadas de regra de negócio devolvem uma mensagem própria para o front-end apresentar ao usuário.
 
 ## Estrutura do projeto
 
 ```text
 ApiOdonto/
-├── Authentication/   # Elementos relacionados à autenticação
-├── Controllers/      # Endpoints HTTP
-├── Data/             # DbContext do Entity Framework
-├── DTOs/             # Contratos de entrada e saída da API
-├── Enums/            # Status de eventos e reservas
-├── Middlewares/      # Tratamento global de exceções
-├── Migrations/       # Histórico de alterações do banco
-├── Models/           # Entidades persistidas
-├── Repositories/     # Acesso e consultas ao banco
-├── Services/         # Regras de negócio
-├── Program.cs        # Configuração e inicialização da aplicação
-├── appsettings.json  # Conexão e configurações gerais
-└── ApiOdonto.csproj  # Framework e dependências NuGet
+|-- Controllers/       endpoints HTTP e autorização
+|-- Data/              AppDbContext e inicialização do banco
+|-- DTOs/              contratos de entrada e saída
+|-- Enums/             status de eventos e reservas
+|-- Exceptions/        exceções de regras de negócio
+|-- Middlewares/       tratamento global de erros
+|-- Migrations/        estrutura versionada do SQL Server
+|-- Models/            entidades persistidas
+|-- Repositories/      acesso ao banco
+|-- Services/          regras de negócio
+|-- Program.cs         serviços e pipeline HTTP
+|-- appsettings.json   connection string e configurações gerais
+|-- .env.example       modelo das variáveis de ambiente
+`-- ApiOdonto.csproj   framework e dependências
 ```
+
+## Observações
+
+- o projeto não processa pagamentos; a reserva serve para separar produtos;
+- datas são armazenadas e comparadas em UTC no backend;
+- o banco local é voltado ao desenvolvimento; a publicação deve usar uma instância SQL Server apropriada para produção;
+- o front-end deverá respeitar os perfis público, VIP e administrador e enviar cookies com `credentials: "include"`.
 
 ---
 
-Desenvolvido por Miguel Amores Ramos
+Desenvolvido por Miguel Amores Ramos.

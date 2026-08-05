@@ -13,6 +13,13 @@ using ApiOdonto.Middlewares;
 // Carrega as variáveis do arquivo .env antes da criação da aplicação.
 Env.Load();
 
+// Obtém a URL do front-end a partir da variável de ambiente FRONTEND_URL. Se não estiver configurada, lança uma exceção.
+var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL")
+    ?? throw new InvalidOperationException(
+        "FRONTEND_URL não configurada.");
+frontendUrl = frontendUrl.TrimEnd('/');
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
@@ -25,6 +32,19 @@ var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
     ?? throw new InvalidOperationException("JWT_AUDIENCE não configurado.");
 
 builder.Services.AddControllers();
+
+// Adicionando o Cors para permitir que o front-end acesse a API.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins(frontendUrl)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 // Adicionando o Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -151,8 +171,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();

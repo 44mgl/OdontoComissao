@@ -1,4 +1,5 @@
 using ApiOdonto.DTOs.Variacoes;
+using ApiOdonto.Exceptions;
 using ApiOdonto.Models;
 using ApiOdonto.Repositories.Interfaces;
 using ApiOdonto.Services.Interfaces;
@@ -57,12 +58,12 @@ public class VariacaoProdutoService : IVariacaoProdutoService
 
         if (produto is null)
         {
-            throw new InvalidOperationException("O produto informado não existe.");
+            throw new RegraNegocioException("O produto informado não existe.");
         }
 
         if (await _variacaoProdutoRepository.VariacaoExistsAsync(dto.ProdutoId, tamanho))
         {
-            throw new InvalidOperationException("Esse produto já possui uma variação com esse tamanho.");
+            throw new RegraNegocioException("Esse produto já possui uma variação com esse tamanho.");
         }
         
         var variacao = new VariacaoProduto
@@ -88,13 +89,13 @@ public class VariacaoProdutoService : IVariacaoProdutoService
 
         if (produto is null)
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
             "O produto informado não existe.");
         }
 
         if (await _variacaoProdutoRepository.VariacaoExistsAsync(dto.ProdutoId, tamanho, id))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Esse produto já possui outra variação com esse tamanho.");
         }
 

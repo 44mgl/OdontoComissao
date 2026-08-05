@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using ApiOdonto.DTOs;
+using ApiOdonto.Exceptions;
 using System.Text.Json;
 
 namespace ApiOdonto.Middlewares
@@ -25,6 +26,30 @@ namespace ApiOdonto.Middlewares
                 try
                 {
                     await _next(context);
+                }
+                catch (RegraNegocioException ex)
+                {
+                    _logger.LogWarning(ex, "Regra de negocio violada.");
+
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    context.Response.ContentType = "application/json";
+
+                    var resposta = new ErrorResponseDto(ex.Message);
+                    var json = JsonSerializer.Serialize(resposta);
+
+                    await context.Response.WriteAsync(json);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    _logger.LogWarning(ex, "Acesso nao autorizado.");
+
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = "application/json";
+
+                    var resposta = new ErrorResponseDto("Não autorizado.");
+                    var json = JsonSerializer.Serialize(resposta);
+
+                    await context.Response.WriteAsync(json);
                 }
                 catch (KeyNotFoundException ex)
                 {
