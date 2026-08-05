@@ -47,6 +47,15 @@ namespace ApiOdonto.Data
                 .HasIndex(r => r.CodigoReserva)
                 .IsUnique();
 
+            // Define a precisao dos valores monetarios no SQL Server.
+            modelBuilder.Entity<Produto>()
+                .Property(p => p.Preco)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<ItemReserva>()
+                .Property(i => i.PrecoUnitario)
+                .HasPrecision(18, 2);
+
             // Não permite duas variações de um mesmo produto e mesmo tamanho.
             modelBuilder.Entity<VariacaoProduto>()
                 .HasIndex(v => new
