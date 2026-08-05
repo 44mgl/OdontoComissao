@@ -109,6 +109,7 @@ builder.Services.AddScoped<IMembroVipService, MembroVipService>();
 builder.Services.AddScoped<IMembroVipAuthService, MembroVipAuthService>();
 builder.Services.AddScoped<IVariacaoProdutoService, VariacaoProdutoService>();
 builder.Services.AddScoped<IReservaService, ReservaService>();
+builder.Services.AddScoped<IAdministradorService, AdministradorService>();
 
 // Repositories
 builder.Services.AddScoped<IAdministradorRepository, AdministradorRepository>();
