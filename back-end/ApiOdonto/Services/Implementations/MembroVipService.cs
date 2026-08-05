@@ -1,4 +1,5 @@
 using ApiOdonto.DTOs.VIPs;
+using ApiOdonto.Exceptions;
 using ApiOdonto.Models;
 using ApiOdonto.Repositories.Interfaces;
 using ApiOdonto.Services.Interfaces;
@@ -70,21 +71,21 @@ public class MembroVipService : IMembroVipService
 
         if (await _membroVipRepository.EmailExistsAsync(email))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Já existe um membro VIP com esse e-mail.");
         }
 
         if (await _membroVipRepository
             .NumeroIdentificacaoExistsAsync(numeroIdentificacao))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Já existe um membro VIP com essa identificação.");
         }
 
         if (dto.DataValidade is null ||
             dto.DataValidade <= DateTime.UtcNow)
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "A validade do membro VIP deve ser uma data futura.");
         }
 
@@ -116,27 +117,27 @@ public class MembroVipService : IMembroVipService
         if (await _membroVipRepository
             .EmailExistsAsync(email, id))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Já existe outro membro VIP com esse e-mail.");
         }
 
         if (await _membroVipRepository
             .NumeroIdentificacaoExistsAsync(numeroIdentificacao, id))
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Já existe outro membro VIP com essa identificação.");
         }
 
         if (dto.DataValidade is null)
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "A validade do membro VIP é obrigatória.");
         }
 
         if (dto.Ativo &&
             dto.DataValidade <= DateTime.UtcNow)
         {
-            throw new InvalidOperationException(
+            throw new RegraNegocioException(
                 "Um membro VIP ativo deve possuir validade futura.");
         }
 
