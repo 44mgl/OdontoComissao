@@ -95,7 +95,7 @@ builder.Services.AddAuthorization();
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(
+    options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
@@ -128,6 +128,13 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope()) // Cria um escopo de serviço para inicializar o banco de dados e criar o administrador inicial.
+{
+    var context = scope.ServiceProvider // Obtém o provedor de serviços do escopo.
+        .GetRequiredService<AppDbContext>(); 
+    await DbInitializer.InitializeAsync(context);
+}
 
 
 if (app.Environment.IsDevelopment())
