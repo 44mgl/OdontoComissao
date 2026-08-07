@@ -5,13 +5,13 @@ import { getProtectedRouteDecision } from './protectedRouteDecision'
 import styles from './ProtectedRoute.module.css'
 
 type ProtectedRouteProps = {
-  allowedRole: UserRole
+  allowedRoles: UserRole[]
   loginPath: '/admin/login' | '/vip/login'
 }
 
-export function ProtectedRoute({ allowedRole, loginPath }: ProtectedRouteProps) {
+export function ProtectedRoute({ allowedRoles, loginPath }: ProtectedRouteProps) {
   const { user, status } = useAuth()
-  const decision = getProtectedRouteDecision(status, user, allowedRole)
+  const decision = getProtectedRouteDecision(status, user, allowedRoles)
 
   if (decision === 'loading') {
     return (

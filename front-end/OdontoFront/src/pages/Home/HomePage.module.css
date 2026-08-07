@@ -41,8 +41,8 @@
 .storyImage span { width: 100%; height: 100%; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #5d1c2c, #161616 70%); color: var(--color-gold); font-family: var(--font-display); font-size: 2rem; }
 .story p { margin: 14px 0 0; color: var(--color-ivory); font-size: .84rem; }
 .eventsSection { width: 100%; padding-inline: max(20px, calc((100vw - 1180px) / 2)); background: var(--color-surface); }
-.eventGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--color-line); }
-.eventCard { min-height: 190px; padding: 30px; display: grid; grid-template-columns: auto 1fr; gap: 24px; background: var(--color-surface); }
+.eventGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: transparent; }
+.eventCard { min-height: 190px; padding: 30px; display: grid; grid-template-columns: auto 1fr; gap: 24px; border: 1px solid var(--color-line); background: var(--color-surface); }
 .dateBox { width: 62px; height: 76px; display: grid; place-content: center; text-align: center; border: 1px solid var(--color-gold); }
 .dateBox strong { color: var(--color-ivory); font-family: var(--font-display); font-size: 2rem; line-height: 1; }
 .dateBox span, .category { color: var(--color-gold); font-size: .63rem; letter-spacing: .15em; text-transform: uppercase; }

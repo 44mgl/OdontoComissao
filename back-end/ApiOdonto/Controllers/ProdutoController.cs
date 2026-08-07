@@ -83,7 +83,7 @@ public class ProdutoController : ControllerBase
         return Ok(produtos);
     }
     
-    [Authorize(Roles = "VIP")] // Só vai rodar se a role de quem fez a requisição for VIP
+    [Authorize(Roles = "VIP,Administrador")]
     [HttpGet("vip")]
     public async Task<ActionResult<List<ProdutoResponseDto>>>GetCatalogoVip()
     {

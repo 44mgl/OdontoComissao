@@ -79,6 +79,11 @@ export function Header() {
                 </NavLink>
               </li>
             )}
+            {user?.perfil === 'Administrador' && (
+              <li className={styles.mobileVip}>
+                <NavLink to="/vip" onClick={closeMenu}>Área VIP</NavLink>
+              </li>
+            )}
             {user && (
               <li className={styles.mobileLogout}>
                 <button type="button" onClick={handleLogout}>Sair</button>
@@ -92,6 +97,9 @@ export function Header() {
             <NavLink className={styles.vip} to={user ? accountPath : '/vip/login'}>
               {user ? accountLabel : 'Área VIP'}
             </NavLink>
+          )}
+          {user?.perfil === 'Administrador' && (
+            <NavLink className={styles.vipSecondary} to="/vip">Área VIP</NavLink>
           )}
           {user && (
             <button className={styles.logout} type="button" onClick={handleLogout}>

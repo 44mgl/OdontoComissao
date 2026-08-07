@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -10,6 +10,7 @@ import styles from '../Auth/LoginPage.module.css'
 
 export function VipLoginPage() {
   const { user, loginVip } = useAuth()
+  const navigate = useNavigate()
   const [identificationNumber, setIdentificationNumber] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<VipLoginErrors>({})
@@ -33,6 +34,7 @@ export function VipLoginPage() {
     try {
       await loginVip(identificationNumber, password)
       setPassword('')
+      navigate('/vip')
     } catch (requestError) {
       setSubmitError(
         requestError instanceof ApiError || requestError instanceof Error

@@ -12,6 +12,23 @@ import { VipLoginPage } from '../pages/VipLogin/VipLoginPage'
 import { ProtectedRoute } from './ProtectedRoute'
 import { AuthorizationListener } from './AuthorizationListener'
 import { AccessDeniedPage } from '../pages/AccessDenied/AccessDeniedPage'
+import { VipLayout } from '../layouts/VipLayout'
+import { VipDashboardPage } from '../pages/Vip/VipDashboardPage'
+import { VipProductsPage } from '../pages/Vip/VipProductsPage'
+import { VipProfilePage } from '../pages/Vip/VipProfilePage'
+import { VipReservationsPage } from '../pages/Vip/VipReservationsPage'
+import { AdminLayout } from '../layouts/AdminLayout'
+import { AdminDashboardPage } from '../pages/Admin/AdminDashboardPage'
+import { AdminResourcePage } from '../pages/Admin/AdminResourcePage'
+import { AdminProductsPage } from '../pages/Admin/AdminProductsPage'
+import { AdminReservationsPage } from '../pages/Admin/AdminReservationsPage'
+import {
+  administratorConfig,
+  commissionConfig,
+  eventConfig,
+  publicationConfig,
+  vipConfig,
+} from '../pages/Admin/resourceConfig'
 
 export function AppRoutes() {
   return (
@@ -31,20 +48,44 @@ export function AppRoutes() {
           <Route path="acesso-negado" element={<AccessDeniedPage />} />
 
           <Route
-            element={<ProtectedRoute allowedRole="VIP" loginPath="/vip/login" />}
+            element={(
+              <ProtectedRoute
+                allowedRoles={['VIP', 'Administrador']}
+                loginPath="/vip/login"
+              />
+            )}
           >
-            <Route path="vip" element={<PlaceholderPage />} />
+            <Route path="vip" element={<VipLayout />}>
+              <Route index element={<VipDashboardPage />} />
+              <Route path="produtos" element={<VipProductsPage />} />
+              <Route
+                element={<ProtectedRoute allowedRoles={['VIP']} loginPath="/vip/login" />}
+              >
+                <Route path="reserva" element={<ReservationPage mode="vip" />} />
+                <Route path="reservas" element={<VipReservationsPage />} />
+                <Route path="perfil" element={<VipProfilePage />} />
+              </Route>
+            </Route>
           </Route>
 
           <Route
             element={(
               <ProtectedRoute
-                allowedRole="Administrador"
+                allowedRoles={['Administrador']}
                 loginPath="/admin/login"
               />
             )}
           >
-            <Route path="admin" element={<PlaceholderPage />} />
+            <Route path="admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboardPage />} />
+              <Route path="publicacoes" element={<AdminResourcePage config={publicationConfig} />} />
+              <Route path="eventos" element={<AdminResourcePage config={eventConfig} />} />
+              <Route path="comissao" element={<AdminResourcePage config={commissionConfig} />} />
+              <Route path="produtos" element={<AdminProductsPage />} />
+              <Route path="reservas" element={<AdminReservationsPage />} />
+              <Route path="vips" element={<AdminResourcePage config={vipConfig} />} />
+              <Route path="administradores" element={<AdminResourcePage config={administratorConfig} />} />
+            </Route>
           </Route>
 
           <Route path="*" element={<PlaceholderPage />} />

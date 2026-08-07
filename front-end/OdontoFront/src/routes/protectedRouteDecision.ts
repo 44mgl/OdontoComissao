@@ -5,7 +5,7 @@ export type ProtectedRouteDecision = 'loading' | 'login' | 'denied' | 'allow'
 export function getProtectedRouteDecision(
   status: SessionStatus,
   user: SessionUser | null,
-  allowedRole: UserRole,
+  allowedRoles: UserRole[],
 ): ProtectedRouteDecision {
   if (status === 'loading') {
     return 'loading'
@@ -15,5 +15,5 @@ export function getProtectedRouteDecision(
     return 'login'
   }
 
-  return user.perfil === allowedRole ? 'allow' : 'denied'
+  return allowedRoles.includes(user.perfil) ? 'allow' : 'denied'
 }

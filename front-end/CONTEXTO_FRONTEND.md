@@ -512,3 +512,17 @@ Pontos conhecidos para acompanhar:
 - testes automatizados ainda não foram implementados.
 
 Ao implementar cada módulo do front-end, testar o fluxo correspondente de ponta a ponta no backend.
+
+## 13. Contratos adicionados para a área VIP
+
+Implementados em 7 de agosto de 2026:
+
+- `GET /api/Produto/vip`: catálogo protegido pelo perfil `VIP`;
+- `POST /api/Reserva`: quando a sessão é VIP, associa a reserva ao ID obtido da
+  claim `NameIdentifier`; o frontend não envia `membroVipId`;
+- `GET /api/VipArea/perfil`: devolve somente o perfil associado ao token VIP;
+- `GET /api/VipArea/reservas`: devolve somente as reservas associadas ao token VIP.
+
+Os endpoints de autoatendimento não recebem ID de membro por rota ou query string.
+Essa decisão impede que um VIP tente consultar os dados de outro apenas alterando um
+identificador no navegador.

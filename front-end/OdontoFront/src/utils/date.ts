@@ -24,3 +24,26 @@ export function formatDateTime(value: string) {
     timeZone: BRAZIL_TIME_ZONE,
   }).format(asDate(value))
 }
+
+export function formatFullDate(value: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'long',
+    timeZone: BRAZIL_TIME_ZONE,
+  }).format(asDate(value))
+}
+
+export function toBrazilDateTimeInput(value: string) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: BRAZIL_TIME_ZONE,
+  }).formatToParts(asDate(value))
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((item) => item.type === type)?.value ?? ''
+
+  return `${part('year')}-${part('month')}-${part('day')}T${part('hour')}:${part('minute')}`
+}

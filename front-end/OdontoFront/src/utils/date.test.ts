@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateTime, formatTime } from './date'
+import { formatDate, formatDateTime, formatTime, toBrazilDateTimeInput } from './date'
 
 describe('formatadores de data', () => {
   const date = '2026-08-20T19:30:00'
@@ -15,5 +15,9 @@ describe('formatadores de data', () => {
 
   it('converte UTC para o horário de São Paulo', () => {
     expect(formatDateTime('2026-08-07T17:08:00Z')).toContain('14:08')
+  })
+
+  it('prepara o horário brasileiro para campos datetime-local', () => {
+    expect(toBrazilDateTimeInput('2026-08-07T17:08:00Z')).toBe('2026-08-07T14:08')
   })
 })

@@ -108,3 +108,43 @@ export async function apiPostNoContent(path: string, signal?: AbortSignal) {
     throw await readError(response, 'Não foi possível concluir a operação.')
   }
 }
+
+async function apiWriteNoContent<TBody>(
+  method: 'PUT' | 'PATCH',
+  path: string,
+  body: TBody,
+) {
+  const response = await fetch(`${API_URL}${path}`, {
+    method,
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    throw await readError(response, 'Não foi possível salvar as alterações.')
+  }
+}
+
+export function apiPut<TBody>(path: string, body: TBody) {
+  return apiWriteNoContent('PUT', path, body)
+}
+
+export function apiPatch<TBody>(path: string, body: TBody) {
+  return apiWriteNoContent('PATCH', path, body)
+}
+
+export async function apiDelete(path: string) {
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: { Accept: 'application/json' },
+  })
+
+  if (!response.ok) {
+    throw await readError(response, 'Não foi possível remover o registro.')
+  }
+}

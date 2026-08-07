@@ -1,10 +1,11 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { getPublicCatalog } from '../../api/products'
+import { getPublicCatalog, getVipCatalog } from '../../api/products'
 import { createReservation } from '../../api/reservations'
 import { ApiError } from '../../api/client'
 import { ContentState } from '../../components/ContentState/ContentState'
 import { useApiList } from '../../hooks/useApiList'
+import { useAuth } from '../../hooks/useAuth'
 import type { Produto, VariacaoProduto } from '../../types/content'
 import type { ReservationResponse } from '../../types/reservation'
 import { formatCurrency } from '../../utils/currency'
@@ -17,14 +18,20 @@ type CartItem = {
   quantity: number
 }
 
-export function ReservationPage() {
+type ReservationPageProps = {
+  mode?: 'public' | 'vip'
+}
+
+export function ReservationPage({ mode = 'public' }: ReservationPageProps) {
   const [searchParams] = useSearchParams()
-  const catalog = useApiList(getPublicCatalog)
+  const { user } = useAuth()
+  const isVip = mode === 'vip'
+  const catalog = useApiList(isVip ? getVipCatalog : getPublicCatalog)
   const [productId, setProductId] = useState(searchParams.get('produto') ?? '')
   const [variationId, setVariationId] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [items, setItems] = useState<CartItem[]>([])
-  const [nomeCliente, setNomeCliente] = useState('')
+  const [nomeCliente, setNomeCliente] = useState(isVip ? user?.nome ?? '' : '')
   const [contato, setContato] = useState('')
   const [observacoes, setObservacoes] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -110,7 +117,7 @@ export function ReservationPage() {
           <span className={styles.successMark} aria-hidden="true">
             ✓
           </span>
-          <p>Reserva solicitada</p>
+          <p>{isVip ? 'Reserva VIP solicitada' : 'Reserva solicitada'}</p>
           <h1>Guarde seu código</h1>
           <strong>{created.codigoReserva}</strong>
           <span>
@@ -120,8 +127,12 @@ export function ReservationPage() {
             <Link to={`/reserva/${encodeURIComponent(created.codigoReserva)}`}>
               Consultar reserva
             </Link>
-            <Link to="/">Voltar ao início</Link>
-            <Link to="/shop">Continuar no Shop</Link>
+            <Link to={isVip ? '/vip' : '/'}>
+              {isVip ? 'Voltar à área VIP' : 'Voltar ao início'}
+            </Link>
+            <Link to={isVip ? '/vip/produtos' : '/shop'}>
+              Continuar no Shop
+            </Link>
           </div>
         </div>
       </main>
@@ -132,15 +143,16 @@ export function ReservationPage() {
     <main>
       <section className={styles.hero}>
         <div>
-          <p>Sem pagamento on-line</p>
+          <p>{isVip ? '7.3 · Reserva autenticada' : 'Sem pagamento on-line'}</p>
           <h1>
             Solicitar
             <br />
             <em>reserva</em>
           </h1>
           <span>
-            Monte seu pedido e confirme seus dados. A disponibilidade final será
-            validada pela comissão.
+            {isVip
+              ? 'Sua reserva será vinculada automaticamente à identidade da sessão VIP.'
+              : 'Monte seu pedido e confirme seus dados. A disponibilidade final será validada pela comissão.'}
           </span>
         </div>
       </section>

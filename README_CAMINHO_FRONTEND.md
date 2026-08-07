@@ -338,21 +338,45 @@ página e usuários não acessam interfaces destinadas a outro perfil.
 
 ## Etapa 7 — Construir a área VIP
 
+**Concluída em 7 de agosto de 2026.**
+
 Ordem sugerida:
 
-1. login VIP;
-2. catálogo exclusivo;
-3. reserva autenticada;
-4. perfil;
-5. histórico e detalhe de reservas.
+1. **7.1 — Login e início VIP — concluída:** autenticação, redirecionamento e
+   dashboard responsivo;
+2. **7.2 — Catálogo exclusivo — concluída:** consumo protegido de
+   `/api/Produto/vip`, estoque e atalhos para reserva;
+3. **7.3 — Reserva autenticada — concluída:** catálogo VIP e vínculo do membro
+   obtido exclusivamente pelo token no backend;
+4. **7.4 — Perfil — concluída:** autoatendimento em `/api/VipArea/perfil` sem aceitar
+   ID de membro na requisição;
+5. **7.5 — Histórico e detalhe — concluída:** reservas do próprio membro em
+   `/api/VipArea/reservas`, com itens e valores expansíveis.
 
-Perfil e histórico só devem avançar depois da confirmação dos endpoints. O formulário
-de reserva VIP não deve solicitar nem enviar `membroVipId`; o vínculo vem do token.
+Os endpoints de perfil e histórico foram adicionados ao backend com autorização VIP.
+O formulário de reserva VIP não solicita nem envia `membroVipId`; o vínculo vem do
+token.
 
 **Concluída quando:** o VIP entra, vê somente seu conteúdo autorizado, reserva e
 consulta seus próprios dados.
 
 ## Etapa 8 — Construir o painel administrativo
+
+**Concluída em 7 de agosto de 2026.**
+
+1. **8.1 — Layout e dashboard — concluída:** navegação responsiva e indicadores
+   calculados com os dados reais da API;
+2. **8.2 — Publicações — concluída:** listagem, criação, edição e exclusão;
+3. **8.3 — Eventos — concluída:** cadastro, edição, status, horário brasileiro e
+   exclusão;
+4. **8.4 — Comissão — concluída:** integrantes, cargos, imagens, ordem e situação;
+5. **8.5 — Produtos e estoque — concluída:** produtos, exclusividade VIP, variações,
+   quantidades e exclusão de variações;
+6. **8.6 — Reservas — concluída:** listagem e transições de status limitadas ao fluxo
+   permitido pelo backend;
+7. **8.7 — VIPs — concluída:** cadastro, edição, validade, ativação e exclusão;
+8. **8.8 — Administradores — concluída:** listagem, criação e edição conforme os
+   endpoints disponíveis. Não há exclusão porque o backend não oferece essa rota.
 
 Criar primeiro o layout administrativo e o dashboard com dados reais disponíveis.
 Depois, desenvolver módulos nesta ordem:

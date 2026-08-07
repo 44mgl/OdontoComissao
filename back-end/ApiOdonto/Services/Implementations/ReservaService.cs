@@ -117,6 +117,12 @@ public class ReservaService : IReservaService
         return reserva is null ? null : MapToPublicDto(reserva);
     }
 
+    public async Task<List<ReservaPublicaResponseDto>> GetByMembroVipIdAsync(int membroVipId)
+    {
+        var reservas = await _reservaRepository.GetByMembroVipIdAsync(membroVipId);
+        return reservas.Select(MapToPublicDto).ToList();
+    }
+
     public async Task<ReservaResponseDto> CreateAsync(CriarReservaDto dto, int? membroVipAutenticadoId)
     {
         var itensAgrupados = dto.Itens

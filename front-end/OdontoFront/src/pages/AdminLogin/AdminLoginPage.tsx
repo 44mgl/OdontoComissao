@@ -70,7 +70,6 @@ export function AdminLoginPage() {
       </section>
 
       <section className={styles.card} aria-labelledby="admin-login-title">
-        <span className={styles.number}>06.2</span>
         <h2 id="admin-login-title">Entrar como administrador</h2>
 
         <form onSubmit={handleSubmit} noValidate>

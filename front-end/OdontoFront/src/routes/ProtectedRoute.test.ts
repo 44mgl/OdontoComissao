@@ -18,18 +18,24 @@ const vipUser: SessionUser = {
 
 describe('getProtectedRouteDecision', () => {
   it('aguarda a restauração antes de decidir', () => {
-    expect(getProtectedRouteDecision('loading', null, 'Administrador')).toBe('loading')
+    expect(getProtectedRouteDecision('loading', null, ['Administrador'])).toBe('loading')
   })
 
   it('envia uma sessão ausente para o login', () => {
-    expect(getProtectedRouteDecision('unauthenticated', null, 'Administrador')).toBe('login')
+    expect(getProtectedRouteDecision('unauthenticated', null, ['Administrador'])).toBe('login')
   })
 
   it('nega acesso ao perfil incorreto', () => {
-    expect(getProtectedRouteDecision('authenticated', vipUser, 'Administrador')).toBe('denied')
+    expect(getProtectedRouteDecision('authenticated', vipUser, ['Administrador'])).toBe('denied')
   })
 
   it('libera o perfil autorizado', () => {
-    expect(getProtectedRouteDecision('authenticated', adminUser, 'Administrador')).toBe('allow')
+    expect(getProtectedRouteDecision('authenticated', adminUser, ['Administrador'])).toBe('allow')
+  })
+
+  it('aceita qualquer um dos perfis explicitamente permitidos', () => {
+    expect(
+      getProtectedRouteDecision('authenticated', adminUser, ['VIP', 'Administrador']),
+    ).toBe('allow')
   })
 })
