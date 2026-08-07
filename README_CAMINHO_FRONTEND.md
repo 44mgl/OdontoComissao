@@ -50,7 +50,7 @@ Antes de alterar o template:
 desenvolvimento e manter `Secure=true`. Ao implementar a autenticação, confirmar no
 DevTools que o navegador grava e reenvia o cookie nas requisições à API.
 
-## Etapa 1 — Definir as decisões mínimas da arquitetura
+## Etapa 1 — Definir as decisões mínimas da arquitetura — concluída
 
 Antes de instalar dependências, responder e registrar:
 
@@ -61,6 +61,125 @@ Antes de instalar dependências, responder e registrar:
 - como serão exibidos avisos temporários, modais e confirmações;
 - como imagens serão fornecidas pelo back-end.
 
+### Perguntas e decisões registradas
+
+#### A identidade visual já está definida?
+
+Sim. A especificação define dourado, vermelho bordô e preto, com estilo minimalista,
+elegante, moderno e glamoroso. Ainda será necessário escolher os tons exatos da
+paleta e as cores auxiliares de fundo, texto, borda, sucesso e erro. Essa escolha
+deverá preservar contraste, legibilidade, consistência e responsividade.
+
+#### Qual roteador será usado e por quê?
+
+Será usado o React Router. Como o sistema terá páginas públicas, VIP e
+administrativas, associar cada tela a uma URL facilitará a navegação e a manutenção.
+Também permitirá usar normalmente os controles de voltar e avançar do navegador,
+compartilhar endereços e proteger separadamente as rotas VIP e administrativas.
+
+As telas continuarão separadas em componentes e arquivos próprios; o roteador não é
+o responsável por essa separação, mas por relacioná-las às URLs e controlar a
+navegação entre elas.
+
+#### Como formulários e validações serão tratados?
+
+No início, os formulários simples serão construídos apenas com os recursos do React,
+usando useState, onChange, onSubmit, campos controlados, validação básica,
+mensagens de erro e estado de envio. O objetivo é compreender primeiro como os
+formulários funcionam no React sem esconder esse mecanismo atrás de uma biblioteca.
+
+O React Hook Form não será instalado agora. Ele será reavaliado quando surgir um
+formulário grande ou repetitivo, como reserva, produtos ou variações. Nesse momento,
+a implementação poderá ser comparada com a abordagem feita somente com React para
+entender concretamente o problema resolvido pela biblioteca.
+
+O Zod também ficará para uma etapa posterior, caso as regras de validação se
+tornem complexas. Não serão introduzidas React Hook Form e Zod simultaneamente apenas
+por antecipação.
+
+#### Qual estratégia de testes será adotada?
+
+Os testes priorizarão comportamentos importantes para o usuário e para as regras do
+sistema. Por exemplo, terá mais valor verificar que uma reserva sem nome ou contato
+é rejeitada do que testar pequenas diferenças de cor ou espaçamento.
+
+Será usado o Vitest como executor de testes, por sua boa integração com o projeto
+criado com Vite. Vite e Vitest possuem funções diferentes: o Vite executa e gera a
+aplicação, enquanto o Vitest executa os testes automatizados.
+
+A Testing Library será usada para testar componentes pela maneira como a pessoa
+interage com eles, como preencher campos, clicar em botões e observar mensagens. No
+início, serão criados poucos testes, ligados a componentes e comportamentos reais já
+implementados. Testes de ponta a ponta e ferramentas mais complexas ficarão para
+quando existir um fluxo completo que justifique seu uso.
+
+A ordem inicial será:
+
+1. testes unitários para funções pequenas e regras puras;
+2. testes de componentes para formulários, validações e estados da interface;
+3. testes de integração quando as páginas começarem a consumir a API;
+4. testes de ponta a ponta depois que os principais fluxos estiverem completos.
+
+#### Como o CSS será organizado?
+
+Serão usados CSS Modules nos componentes e páginas. Cada arquivo de estilos será
+associado ao componente correspondente, reduzindo conflitos entre nomes de classes e
+facilitando encontrar o código responsável por cada parte da interface.
+
+Um arquivo CSS global continuará sendo usado somente para:
+
+- reset e normalização básica do navegador;
+- tokens de cores, tipografia, espaçamento, raios e sombras;
+- estilos gerais do documento, como body, links e foco visível;
+- regras realmente compartilhadas por toda a aplicação.
+
+Essa estratégia permitirá praticar CSS diretamente, sem introduzir uma biblioteca de
+estilos, e manterá os estilos locais organizados conforme o projeto crescer.
+
+#### Como serão exibidos avisos, modais e confirmações?
+
+Mensagens de erro, sucesso, carregamento e ausência de dados serão apresentadas
+inicialmente dentro da própria página, próximas do conteúdo ou da ação a que se
+referem. Isso mantém o feedback visível e reduz a necessidade de novas dependências.
+
+Avisos temporários serão introduzidos somente quando existir um caso real em que uma
+mensagem global e breve seja mais adequada. Modais também serão criados apenas no
+primeiro uso concreto, evitando componentes antecipados sem requisitos definidos.
+
+Ações destrutivas, como excluir um produto, deverão pedir confirmação antes de serem
+executadas. A confirmação mostrará claramente qual ação será realizada e qual item
+será afetado. Quando possível, o botão principal usará uma descrição específica,
+como Excluir produto, em vez de apenas Confirmar.
+
+#### Como as imagens serão fornecidas?
+
+A primeira versão manterá o contrato atual do back-end baseado em imagemUrl. O
+painel administrativo receberá a URL de uma imagem já hospedada, sem implementar
+upload de arquivos nesta etapa.
+
+As imagens deverão estar em uma hospedagem controlada ou autorizada para esse uso.
+Não serão usados links copiados diretamente de sites de terceiros, pois eles podem
+expirar, mudar, impedir a exibição externa ou possuir restrições de uso.
+
+Durante o desenvolvimento, imagens fixas de demonstração também poderão ficar na
+pasta pública do front-end. Essa alternativa serve para dados conhecidos do projeto,
+mas não permite que a administração adicione novos arquivos sem uma publicação do
+site.
+
+O upload direto pelo painel fica registrado como evolução futura. Ele exigirá que o
+back-end valide, armazene e disponibilize os arquivos, mantendo no banco a URL
+gerada. Se for implementado para a apresentação acadêmica, poderá começar com
+armazenamento local; antes de uma implantação real, deverá ser avaliado um
+armazenamento externo persistente.
+
+#### TanStack Query será usado inicialmente?
+
+Não. A primeira integração será feita com o cliente HTTP central e hooks próprios,
+para tornar explícitos o carregamento, o erro, o cancelamento e a atualização dos
+dados. TanStack Query será reavaliado se surgirem necessidades concretas de cache,
+revalidação automática, deduplicação de requisições ou sincronização frequente entre
+várias telas.
+
 Dependências devem entrar apenas quando resolverem uma necessidade conhecida. Para
 este projeto, vale pesquisar:
 
@@ -69,10 +188,13 @@ este projeto, vale pesquisar:
 - Vitest, Testing Library e Mock Service Worker;
 - TanStack Query, comparando seus benefícios com hooks próprios para consumo da API.
 
-**Concluída quando:** as escolhas essenciais e os motivos estão registrados e o
-projeto continua passando no build.
+**Situação:** decisões essenciais registradas e template inicial validado com lint e
+build em 6 de agosto de 2026.
 
-## Etapa 2 — Limpar o template e criar a fundação
+## Etapa 2 — Limpar o template e criar a fundação — concluída
+
+**Concluída em 6 de agosto de 2026.** O template foi substituído por uma fundação
+responsiva com rotas, layouts, CSS Modules, tokens visuais e configuração da API.
 
 Organizar `src` sem antecipar abstrações desnecessárias:
 
@@ -105,7 +227,12 @@ Não colocar segredos em variáveis `VITE_*`: elas são expostas ao navegador.
 **Concluída quando:** existe uma aplicação vazia, navegável e responsiva, usando a
 paleta bordô, dourado e preto sem conteúdo do template.
 
-## Etapa 3 — Criar os componentes visuais essenciais
+## Etapa 3 — Criar os componentes visuais essenciais — concluída
+
+**Concluída em 6 de agosto de 2026 para o primeiro fluxo público.** Cabeçalho,
+rodapé, navegação responsiva, estados de conteúdo e componentes visuais necessários
+para a Home estão implementados. Novos componentes serão criados sob demanda nas
+próximas telas, especialmente campos e confirmações quando surgirem formulários.
 
 Começar somente pelo que será reutilizado nas primeiras páginas:
 
@@ -125,7 +252,11 @@ texto alternativo quando aplicável e comportamento em telas pequenas.
 **Concluída quando:** os componentes necessários para a primeira tela real funcionam
 isoladamente e não contêm regras de negócio.
 
-## Etapa 4 — Construir a camada de API
+## Etapa 4 — Construir a camada de API — concluída
+
+**Concluída em 6 de agosto de 2026.** O cliente HTTPS foi validado com a API real,
+incluindo credenciais, dados públicos, cancelamento de chamadas e apresentação dos
+estados de carregamento, sucesso, vazio e erro na Home.
 
 Criar um cliente HTTP único que:
 
@@ -145,12 +276,15 @@ carregamento, sucesso, vazio e falha.
 
 ## Etapa 5 — Entregar o núcleo público por fatias verticais
 
+**Em andamento desde 7 de agosto de 2026.**
+
 Ordem sugerida:
 
-1. **Página inicial:** destaques, próximos eventos e comissão resumida;
-2. **Cronograma:** próximos e anteriores, status e detalhes do evento;
-3. **Comissão:** integrantes ordenados;
-4. **Shop:** catálogo, variações, tamanhos e estoque;
+1. **Página inicial — concluída:** destaques, próximos eventos e comissão resumida;
+2. **Cronograma — parcialmente concluído:** próximos eventos, status e detalhes estão
+   integrados; eventos anteriores aguardam um endpoint público no back-end;
+3. **Comissão — concluída:** integrantes ordenados, descrição e fallback de imagem;
+4. **Shop — concluído:** catálogo, categorias, variações, tamanhos e estoque;
 5. **Reserva:** seleção de itens, dados do cliente, confirmação e código;
 6. **Consulta da reserva:** busca e apresentação pelo código.
 

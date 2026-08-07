@@ -26,3 +26,8 @@ Se o usuário pedir explicitamente uma implementação completa, confirmar o nov
 de ajuda esperado antes de substituir o método guiado. Questões críticas de segurança,
 perda de dados ou exposição de segredos devem ser apontadas diretamente.
 
+## Nível de ajuda atual
+
+Em 6 de agosto de 2026, o usuário solicitou que o assistente implemente a fundação e
+os protótipos iniciais completos, mantendo explicações e oportunidades de aprendizado.
+O método passou de construção exclusivamente guiada para implementação acompanhada.

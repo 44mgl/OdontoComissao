@@ -32,8 +32,14 @@ appsettings.Production.json
 .env
 .env.*
 !.env.example
+
+# Documentos de contexto e planejamento
 .agent.md
 PLANO_CORRECAO.md
+/README_CAMINHO_FRONTEND.md
+/METODO_APRENDIZADO.md
+/ESPECIFICACOES_FRONTEND.md
+/CONTEXTO_FRONTEND.md
 
 # Logs
 *.log
