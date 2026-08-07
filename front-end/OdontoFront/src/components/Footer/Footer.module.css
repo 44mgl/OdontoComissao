@@ -12,7 +12,9 @@
 .inner p { max-width: 430px; margin: 12px 0 0; color: var(--color-muted); }
 .links { display: flex; gap: 22px; }
 .links a { color: var(--color-ivory); font-size: .8rem; text-decoration: none; }
-.inner small { color: var(--color-muted); }
+.inner small { display: inline-flex; align-items: center; gap: 9px; color: var(--color-muted); }
+.github { width: 24px; height: 24px; display: inline-grid; place-items: center; border-radius: 50%; background: var(--color-gold); color: var(--color-black); }
+.github svg { width: 16px; height: 16px; display: block; }
 @media (max-width: 760px) {
   .inner { width: calc(100% - 32px); padding-block: 38px; grid-template-columns: 1fr; align-items: start; }
   .links { flex-wrap: wrap; }

@@ -1,0 +1,10 @@
+.shell { width: min(1500px, 100%); min-height: 100svh; margin-inline: auto; display: grid; grid-template-columns: 250px minmax(0, 1fr); background: #0c0c0c; }
+.sidebar { position: sticky; top: 82px; height: calc(100svh - 82px); padding: 32px 22px; display: flex; flex-direction: column; border-right: 1px solid var(--color-line); background: #0a0a0a; }
+.sidebar > div span { display: block; color: var(--color-gold); font-size: .6rem; font-weight: 750; letter-spacing: .18em; text-transform: uppercase; }
+.sidebar > div strong { margin-top: 7px; display: block; color: var(--color-ivory); font-family: var(--font-display); font-size: 1.7rem; font-weight: 500; }
+.sidebar nav { margin-top: 35px; display: grid; }
+.sidebar nav a { min-height: 46px; padding: 0 12px; display: flex; align-items: center; border-left: 2px solid transparent; color: var(--color-muted); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; }
+.sidebar nav .active { border-left-color: var(--color-gold); background: rgb(201 164 76 / 7%); color: var(--color-gold-light); }
+.vipPreview { margin-top: auto; color: var(--color-gold-light); font-size: .67rem; font-weight: 700; text-decoration: none; text-transform: uppercase; }
+.content { min-width: 0; }
+@media (max-width: 900px) { .shell { grid-template-columns: 1fr; } .sidebar { position: sticky; top: 70px; z-index: 9; width: 100%; height: auto; padding: 15px 16px 0; border-right: 0; border-bottom: 1px solid var(--color-line); } .sidebar > div, .vipPreview { display: none; } .sidebar nav { margin: 0; display: flex; overflow-x: auto; } .sidebar nav a { flex: 0 0 auto; border-left: 0; border-bottom: 2px solid transparent; } .sidebar nav .active { border-bottom-color: var(--color-gold); } }

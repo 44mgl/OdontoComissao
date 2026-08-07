@@ -31,6 +31,16 @@ public class ReservaRepository : IReservaRepository
         .ThenInclude(i => i.VariacaoProduto)
         .ThenInclude(v => v.Produto)
         .FirstOrDefaultAsync(r => r.CodigoReserva == codigoReserva);
+
+    public Task<List<Reserva>> GetByMembroVipIdAsync(int membroVipId) =>
+        _context.Reservas.AsNoTracking()
+            .Where(r => r.MembroVipId == membroVipId)
+            .Include(r => r.Itens)
+            .ThenInclude(i => i.VariacaoProduto)
+            .ThenInclude(v => v.Produto)
+            .OrderByDescending(r => r.DataReserva)
+            .ToListAsync();
+
     public Task<bool> CodigoExistsAsync(string codigoReserva) =>
         _context.Reservas.AnyAsync(r => r.CodigoReserva == codigoReserva);
 

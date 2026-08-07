@@ -1,0 +1,43 @@
+.page {
+  min-height: calc(100svh - 82px);
+  padding: 40px 20px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle, rgb(128 20 46 / 20%), transparent 30%),
+    var(--color-black);
+}
+
+.page > div {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  color: var(--color-muted);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.page p { margin: 0; }
+
+.marker {
+  width: 38px;
+  aspect-ratio: 1;
+  border: 1px solid var(--color-line);
+  border-top-color: var(--color-gold);
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 760px) {
+  .page { min-height: calc(100svh - 70px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker { animation: none; border-color: var(--color-gold); }
+}
