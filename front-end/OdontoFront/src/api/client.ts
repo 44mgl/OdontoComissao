@@ -47,3 +47,40 @@ export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> 
 
   return (await response.json()) as T
 }
+
+export async function apiPost<TResponse, TBody>(
+  path: string,
+  body: TBody,
+  signal?: AbortSignal,
+): Promise<TResponse> {
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+    signal,
+  })
+
+  if (!response.ok) {
+    let errorBody: ErrorBody = {}
+    try {
+      errorBody = (await response.json()) as ErrorBody
+    } catch {
+      // A resposta pode não possuir um corpo JSON.
+    }
+
+    const validationMessage = errorBody.errors
+      ? Object.values(errorBody.errors).flat().join(' ')
+      : undefined
+
+    throw new ApiError(
+      validationMessage ?? errorBody.message ?? errorBody.Message ?? 'Não foi possível concluir a operação.',
+      response.status,
+    )
+  }
+
+  return (await response.json()) as TResponse
+}
