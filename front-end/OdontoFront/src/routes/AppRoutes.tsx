@@ -4,6 +4,7 @@ import { HomePage } from '../pages/Home/HomePage'
 import { EventsPage } from '../pages/Events/EventsPage'
 import { CommissionPage } from '../pages/Commission/CommissionPage'
 import { ShopPage } from '../pages/Shop/ShopPage'
+import { ReservationPage } from '../pages/Reservation/ReservationPage'
 import { PlaceholderPage } from '../pages/Placeholder/PlaceholderPage'
 
 export function AppRoutes() {
@@ -15,7 +16,7 @@ export function AppRoutes() {
           <Route path="eventos" element={<EventsPage />} />
           <Route path="comissao" element={<CommissionPage />} />
           <Route path="shop" element={<ShopPage />} />
-          <Route path="reserva" element={<PlaceholderPage />} />
+          <Route path="reserva" element={<ReservationPage />} />
           <Route path="vip/login" element={<PlaceholderPage />} />
           <Route path="admin/login" element={<PlaceholderPage />} />
           <Route path="*" element={<PlaceholderPage />} />

@@ -285,7 +285,7 @@ Ordem sugerida:
    integrados; eventos anteriores aguardam um endpoint público no back-end;
 3. **Comissão — concluída:** integrantes ordenados, descrição e fallback de imagem;
 4. **Shop — concluído:** catálogo, categorias, variações, tamanhos e estoque;
-5. **Reserva:** seleção de itens, dados do cliente, confirmação e código;
+5. **Reserva — concluída:** seleção de itens, dados do cliente, confirmação e código;
 6. **Consulta da reserva:** busca e apresentação pelo código.
 
 A página inicial vem primeiro porque valida layout, responsividade e três integrações
