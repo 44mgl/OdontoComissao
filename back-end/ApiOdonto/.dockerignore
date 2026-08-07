@@ -1,0 +1,17 @@
+bin/
+obj/
+.git/
+.gitignore
+.vs/
+.vscode/
+
+.env
+.env.*
+!.env.example
+
+ApiOdonto.db
+*.db-shm
+*.db-wal
+
+Dockerfile*
+README.md

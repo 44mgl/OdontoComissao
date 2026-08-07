@@ -10,8 +10,14 @@ using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
 using ApiOdonto.Middlewares;
 
-// Carrega as variáveis do arquivo .env antes da criação da aplicação.
-Env.Load();
+// No desenvolvimento, carrega as variáveis do arquivo .env quando ele existir.
+// Em produção, como no Render, as configurações vêm das variáveis do ambiente.
+var envFilePath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+
+if (File.Exists(envFilePath))
+{
+    Env.Load(envFilePath);
+}
 
 // Obtém a URL do front-end a partir da variável de ambiente FRONTEND_URL. Se não estiver configurada, lança uma exceção.
 var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL")
@@ -185,5 +191,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Rota pública usada pelo Render para verificar se a API está respondendo.
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy"
+})).AllowAnonymous();
 
 app.Run();
