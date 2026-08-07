@@ -55,7 +55,8 @@
 }
 
 .menuButton,
-.mobileVip { display: none; }
+.mobileVip,
+.mobileLogout { display: none; }
 
 .navigation a {
   color: var(--color-muted);
@@ -81,12 +82,16 @@
   text-transform: uppercase;
 }
 
+.sessionActions { display: flex; align-items: center; gap: 12px; }
+.logout { border: 0; background: transparent; color: var(--color-muted); font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.logoutError { width: min(1180px, calc(100% - 40px)); margin: 0 auto 10px; color: #efb3c1; font-size: .72rem; text-align: right; }
+
 @media (max-width: 760px) {
   .inner { width: min(100% - 28px, 1180px); grid-template-columns: 1fr auto; min-height: 70px; gap: 14px; }
   .crest { width: 42px; }
   .brand strong { font-size: .95rem; }
   .brand small { display: block; font-size: .5rem; }
-  .vip { display: none; }
+  .sessionActions { display: none; }
   .menuButton {
     width: 44px;
     height: 44px;
@@ -119,4 +124,7 @@
   .navigation a { min-height: 52px; display: flex; align-items: center; font-size: .82rem; }
   .mobileVip { display: block; border-bottom: 0 !important; }
   .mobileVip a { color: var(--color-gold-light); }
+  .mobileLogout { display: block; border-bottom: 0 !important; }
+  .mobileLogout button { width: 100%; min-height: 52px; padding: 0; border: 0; background: transparent; color: #efb3c1; font-size: .82rem; font-weight: 650; letter-spacing: .1em; text-align: left; text-transform: uppercase; cursor: pointer; }
+  .logoutError { width: calc(100% - 28px); text-align: left; }
 }

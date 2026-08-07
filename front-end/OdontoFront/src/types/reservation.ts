@@ -29,3 +29,20 @@ export type ReservationResponse = {
   dataAtualizacao: string
   itens: ReservationItemResponse[]
 }
+
+export type PublicReservationItem = {
+  produto: string
+  tamanho: string
+  quantidade: number
+  precoUnitario: number
+  subtotal: number
+}
+
+export type PublicReservation = {
+  codigoReserva: string
+  dataReserva: string
+  status: 1 | 2 | 3 | 4 | 5
+  dataAtualizacao: string
+  valorTotal: number
+  itens: PublicReservationItem[]
+}

@@ -286,7 +286,7 @@ Ordem sugerida:
 3. **Comissão — concluída:** integrantes ordenados, descrição e fallback de imagem;
 4. **Shop — concluído:** catálogo, categorias, variações, tamanhos e estoque;
 5. **Reserva — concluída:** seleção de itens, dados do cliente, confirmação e código;
-6. **Consulta da reserva:** busca e apresentação pelo código.
+6. **Consulta da reserva — concluída:** busca, status, itens e valores pelo código.
 
 A página inicial vem primeiro porque valida layout, responsividade e três integrações
 somente de leitura. A reserva vem depois do catálogo porque depende da seleção de
@@ -299,6 +299,27 @@ No envio da reserva, nunca confiar em preço ou estoque exibidos nem enviar pre�
 públicos e consultar a reserva pelo código.
 
 ## Etapa 6 — Implementar sessão e autorização
+
+**Concluída em 7 de agosto de 2026.**
+
+Divisão adotada para implementar e testar o fluxo em partes:
+
+1. **6.1 — Base da sessão — concluída:** tipos, consulta a `/api/Auth/me`, contexto e
+   restauração automática da sessão pelo cookie seguro;
+2. **6.2 — Login administrativo — concluída:** formulário, validação visual, envio
+   das credenciais e atualização da sessão autenticada;
+3. **6.3 — Login VIP — concluída:** formulário por identificação, validação visual,
+   autenticação em `/VipAuth/login` e restauração da sessão VIP;
+4. **6.4 — Proteção de rotas por perfil — concluída:** guardas para `/admin` e
+   `/vip`, redirecionamento ao login e espera da restauração da sessão sem exibir
+   conteúdo protegido;
+5. **6.5 — Logout — concluída:** encerramento pelo endpoint da API, limpeza da
+   sessão local e controles responsivos no cabeçalho;
+6. **6.6 — Tratamento de `401`, `403` e acesso negado — concluída:** eventos globais
+   de autorização, redirecionamento após sessão expirada e página responsiva de
+   acesso negado;
+7. **6.7 — Testes e revisão final — concluída:** matriz de decisão das rotas,
+   resposta `204` do logout, validações, lint, build e 20 testes aprovados.
 
 Somente após o cliente HTTP estar estável:
 

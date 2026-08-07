@@ -117,6 +117,9 @@ export function ReservationPage() {
             Você precisará desse código para consultar o andamento da reserva.
           </span>
           <div>
+            <Link to={`/reserva/${encodeURIComponent(created.codigoReserva)}`}>
+              Consultar reserva
+            </Link>
             <Link to="/">Voltar ao início</Link>
             <Link to="/shop">Continuar no Shop</Link>
           </div>

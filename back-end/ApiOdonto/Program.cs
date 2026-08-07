@@ -31,7 +31,13 @@ var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
 var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
     ?? throw new InvalidOperationException("JWT_AUDIENCE não configurado.");
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new ApiOdonto.Infrastructure.Serialization.UtcDateTimeJsonConverter());
+    });
 
 // Adicionando o Cors para permitir que o front-end acesse a API.
 builder.Services.AddCors(options =>
