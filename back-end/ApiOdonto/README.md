@@ -124,9 +124,14 @@ ADMIN_INICIAL_EMAIL=admin@exemplo.com
 ADMIN_INICIAL_SENHA=uma-senha-forte
 
 FRONTEND_URL=http://localhost:5173
+ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=OdontoComissaoDb;Username=postgres;Password=postgres
 ```
 
 O arquivo `.env` é ignorado pelo Git e não deve ser publicado. O `.env.example` deve conter apenas valores vazios ou exemplos que não sejam segredos reais.
+
+Em produção, `ConnectionStrings__DefaultConnection` deve usar o **Session Pooler**
+do Supabase na porta `5432`. Para o pooler, o usuário possui o formato
+`postgres.<project-ref>`, e não apenas `postgres`.
 
 ### 4. Restaure as dependências
 
@@ -543,7 +548,72 @@ ApiOdonto/
 |-- Program.cs         serviços e pipeline HTTP
 |-- appsettings.json   connection string e configurações gerais
 |-- .env.example       modelo das variáveis de ambiente
+|-- Dockerfile         build e runtime .NET 10 no Render
+|-- .dockerignore      exclusões do contexto Docker
 `-- ApiOdonto.csproj   framework e dependências
+```
+
+## Deploy com Supabase e Render
+
+### Supabase
+
+Crie um projeto PostgreSQL e selecione `Connect > Session pooler > .NET`. O formato
+de produção é equivalente a:
+
+```text
+Host=<pooler>;Port=5432;Database=postgres;Username=postgres.<project-ref>;Password=<senha>;SSL Mode=Require;Timeout=30
+```
+
+Nunca envie essa string ao GitHub ou ao front-end.
+
+### Render
+
+Crie um `Web Service` com:
+
+```text
+Language: Docker
+Root Directory: back-end/ApiOdonto
+Dockerfile Path: ./Dockerfile
+Health Check Path: /health
+```
+
+Variáveis necessárias:
+
+```env
+ASPNETCORE_ENVIRONMENT=Production
+ConnectionStrings__DefaultConnection=<connection-string-do-supabase>
+
+JWT_KEY=<chave-secreta-longa>
+JWT_ISSUER=ApiOdonto
+JWT_AUDIENCE=OdontoComissaoFrontend
+JWT_EXPIRES_MINUTES=120
+
+ADMIN_INICIAL_NOME=<nome>
+ADMIN_INICIAL_EMAIL=<email>
+ADMIN_INICIAL_SENHA=<senha>
+
+FRONTEND_URL=https://seu-projeto.vercel.app
+```
+
+Na inicialização, `DbInitializer` aplica migrations pendentes e cria o primeiro
+administrador quando o banco ainda não possui nenhum. O endpoint público `/health`
+retorna `200 OK` para a verificação do Render.
+
+O Render encerra o HTTPS no proxy e encaminha HTTP para a porta `10000` do container.
+Por isso, `UseHttpsRedirection()` é usado somente no ambiente local de desenvolvimento.
+
+### Validação
+
+```powershell
+dotnet restore
+dotnet build --configuration Release
+dotnet ef migrations script --configuration Release
+```
+
+Depois do deploy, verifique:
+
+```text
+https://seu-servico.onrender.com/health
 ```
 
 ## Observações
