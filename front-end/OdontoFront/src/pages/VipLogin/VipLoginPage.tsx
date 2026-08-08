@@ -98,7 +98,7 @@ export function VipLoginPage() {
           </label>
 
           <label htmlFor="vip-password">
-            Senha
+            Número de Adesão
             <input
               id="vip-password"
               name="password"

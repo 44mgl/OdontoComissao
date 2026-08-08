@@ -47,7 +47,7 @@ namespace ApiOdonto.Data
                 .HasIndex(r => r.CodigoReserva)
                 .IsUnique();
 
-            // Define a precisao dos valores monetarios no SQL Server.
+            // Define a precisão dos valores monetários no PostgreSQL.
             modelBuilder.Entity<Produto>()
                 .Property(p => p.Preco)
                 .HasPrecision(18, 2);
