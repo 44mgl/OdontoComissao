@@ -105,6 +105,13 @@ Configuração local:
 VITE_API_URL=https://localhost:7103
 ```
 
+Na Vercel, a mesma chave deve apontar somente para a origem pública do Render, sem repetir `VITE_API_URL=` no valor:
+
+```text
+Key:   VITE_API_URL
+Value: https://seu-servico.onrender.com
+```
+
 Variáveis iniciadas com `VITE_` são incorporadas ao código enviado ao navegador.
 Nunca coloque senhas, tokens, chaves privadas ou outros segredos nessas variáveis.
 
@@ -277,7 +284,8 @@ src/
 |-- utils/        datas, moeda, validações e regras puras
 |-- App.tsx       composição principal
 |-- index.css     tokens, reset e estilos globais
-`-- main.tsx      ponto de entrada
+|-- main.tsx      ponto de entrada
+`-- ../vercel.json fallback das rotas SPA na Vercel
 ```
 
 ## Rotas públicas
@@ -455,6 +463,9 @@ O arquivo `src/index.css` contém:
 Cada página ou componente possui seu próprio arquivo `.module.css`. Os principais
 breakpoints ajustam a interface para tablet e celular.
 
+O painel administrativo também adapta navegação, métricas, listas, formulários,
+seletores de status e controles de estoque para telas a partir de 320 px.
+
 Paleta principal:
 
 ```css
@@ -537,7 +548,7 @@ A sessão é válida, mas o perfil não possui permissão para o endpoint.
 
 Pare e inicie novamente a API para carregar a nova compilação.
 
-## Build e publicação
+## Build e publicação na Vercel
 
 Gere a aplicação:
 
@@ -553,6 +564,36 @@ Os arquivos finais estarão em `dist/`. A hospedagem precisa:
 - permitir a origem real do front-end no CORS da API;
 - manter cookies e API em HTTPS;
 - preservar corretamente os atributos do cookie de autenticação.
+
+Configuração do projeto na Vercel:
+
+```text
+Framework Preset: Vite
+Root Directory: front-end/OdontoFront
+Build Command: npm run build
+Output Directory: dist
+```
+
+O arquivo `vercel.json` redireciona rotas como `/admin/login`, `/vip` e
+`/reserva/:codigo` para `index.html`, permitindo que o React Router resolva a página
+mesmo após uma atualização direta do navegador.
+
+Variável de produção:
+
+```env
+VITE_API_URL=https://seu-servico.onrender.com
+```
+
+Variáveis `VITE_` são incorporadas durante o build. Depois de alterar o valor no
+painel da Vercel, gere um novo deploy.
+
+Checklist após a publicação:
+
+- abrir a Home e confirmar dados vindos da API;
+- atualizar diretamente uma rota interna e confirmar que não ocorre `404`;
+- testar login administrativo e VIP;
+- conferir o cookie `access_token` enviado com `credentials: "include"`;
+- testar as telas administrativas em 320, 375, 390 e 430 px.
 
 
 ## Autor
