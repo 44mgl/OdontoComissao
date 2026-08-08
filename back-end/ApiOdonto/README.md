@@ -2,7 +2,7 @@
 
 API REST do projeto **Odonto Comissão**, criada para gerenciar as informações públicas de uma turma de Odontologia, o catálogo de produtos, os acessos VIP e as reservas sem pagamento pelo site.
 
-O backend foi desenvolvido com **ASP.NET Core 10**, **Entity Framework Core** e **SQL Server**. A autenticação de administradores e membros VIP utiliza JWT armazenado em cookie seguro.
+O backend foi desenvolvido com **ASP.NET Core 10**, **Entity Framework Core** e **PostgreSQL**. A autenticação de administradores e membros VIP utiliza JWT armazenado em cookie seguro.
 
 ## Sumário
 
@@ -52,7 +52,7 @@ Front-end / Cliente HTTP
  Entity Framework Core
           |
           v
-       SQL Server
+       PostgreSQL
 ```
 
 Os **DTOs** definem os dados aceitos e devolvidos pela API. As entidades do banco não são expostas diretamente, especialmente nas consultas públicas.
@@ -63,7 +63,7 @@ Os **DTOs** definem os dados aceitos e devolvidos pela API. As entidades do banc
 |---|---|
 | .NET 10 / ASP.NET Core | Construção da API REST |
 | Entity Framework Core 10 | ORM, relacionamentos e migrations |
-| SQL Server / LocalDB | Banco de dados relacional |
+| PostgreSQL | Banco de dados relacional |
 | JWT Bearer | Autenticação e autorização por perfil |
 | BCrypt | Hash e verificação de senhas |
 | Swagger / OpenAPI | Exploração e testes manuais dos endpoints |
@@ -78,7 +78,7 @@ Os **DTOs** definem os dados aceitos e devolvidos pela API. As entidades do banc
 | `Microsoft.AspNetCore.Authentication.JwtBearer` | 10.0.10 | Autenticação JWT |
 | `Microsoft.EntityFrameworkCore` | 10.0.10 | ORM |
 | `Microsoft.EntityFrameworkCore.Design` | 10.0.10 | Suporte às migrations |
-| `Microsoft.EntityFrameworkCore.SqlServer` | 10.0.10 | Provider do SQL Server |
+| `Npgsql.EntityFrameworkCore.PostgreSQL` | 10.0.3 | Provider do PostgreSQL |
 | `Microsoft.EntityFrameworkCore.Tools` | 10.0.10 | Ferramentas do EF Core |
 | `Swashbuckle.AspNetCore` | 10.2.3 | Swagger UI |
 
@@ -87,7 +87,7 @@ Os **DTOs** definem os dados aceitos e devolvidos pela API. As entidades do banc
 ### Pré-requisitos
 
 - [.NET SDK 10](https://dotnet.microsoft.com/download);
-- SQL Server LocalDB, SQL Server Express ou outra instância compatível;
+- PostgreSQL local ou uma instância hospedada, como o Supabase;
 - ferramenta `dotnet-ef` para gerenciar migrations.
 
 ### 1. Entre na pasta da API
@@ -101,8 +101,10 @@ cd back-end/ApiOdonto
 O ambiente local está preparado no `appsettings.json` para utilizar:
 
 ```text
-Server=(localdb)\MSSQLLocalDB
+Host=localhost
+Port=5432
 Database=OdontoComissaoDb
+Username=postgres
 ```
 
 Para outro servidor, altere a connection string `DefaultConnection` de acordo com o ambiente.
@@ -162,7 +164,7 @@ O Swagger é habilitado no ambiente `Development`.
 
 ## Banco de dados
 
-O projeto utiliza SQL Server e possui uma migration inicial própria desse provider. A migration cria as tabelas, chaves estrangeiras e índices do sistema.
+O projeto utiliza PostgreSQL e possui uma migration inicial própria do provider Npgsql. A migration cria as tabelas, chaves estrangeiras e índices do sistema.
 
 Restrições importantes no banco:
 
@@ -534,7 +536,7 @@ ApiOdonto/
 |-- Enums/             status de eventos e reservas
 |-- Exceptions/        exceções de regras de negócio
 |-- Middlewares/       tratamento global de erros
-|-- Migrations/        estrutura versionada do SQL Server
+|-- Migrations/        estrutura versionada do PostgreSQL
 |-- Models/            entidades persistidas
 |-- Repositories/      acesso ao banco
 |-- Services/          regras de negócio
@@ -548,7 +550,7 @@ ApiOdonto/
 
 - o projeto não processa pagamentos; a reserva serve para separar produtos;
 - datas são armazenadas e comparadas em UTC no backend;
-- o banco local é voltado ao desenvolvimento; a publicação deve usar uma instância SQL Server apropriada para produção;
+- o banco local é voltado ao desenvolvimento; a publicação pode usar uma instância PostgreSQL do Supabase;
 - o front-end deverá respeitar os perfis público, VIP e administrador e enviar cookies com `credentials: "include"`.
 
 ---
