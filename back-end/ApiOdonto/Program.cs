@@ -183,7 +183,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseHttpsRedirection();
+
+// Em produção, o Render encerra o HTTPS no proxy e encaminha HTTP ao container.
+// O redirecionamento interno é necessário apenas durante o desenvolvimento local.
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors("Frontend");
 

@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'https://localhost:7103'
+const API_URL = (
+  import.meta.env.VITE_API_URL ?? 'https://localhost:7103'
+).replace(/\/+$/, '')
 
 export const AUTH_UNAUTHORIZED_EVENT = 'auth:unauthorized'
 export const AUTH_FORBIDDEN_EVENT = 'auth:forbidden'
